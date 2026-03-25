@@ -54,25 +54,24 @@ pub struct CategoryRule {
 
 impl CategoryRule {
     pub fn matches(&self, description: &str, posting: &Posting) -> bool {
-        if let Some(ref account) = self.account {
-            if &posting.account != account {
-                return false;
-            }
+        if let Some(ref account) = self.account
+            && &posting.account != account
+        {
+            return false;
         }
 
-        if let Some(ref pattern) = self.description_contains {
-            if !description
+        if let Some(ref pattern) = self.description_contains
+            && !description
                 .to_ascii_lowercase()
                 .contains(&pattern.to_ascii_lowercase())
-            {
-                return false;
-            }
+        {
+            return false;
         }
 
-        if let Some(ref regex) = self.description_regex {
-            if !regex.is_match(description) {
-                return false;
-            }
+        if let Some(ref regex) = self.description_regex
+            && !regex.is_match(description)
+        {
+            return false;
         }
 
         true

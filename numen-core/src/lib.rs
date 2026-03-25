@@ -1,3 +1,10 @@
+#![warn(
+    clippy::dbg_macro,
+    clippy::todo,
+    clippy::unimplemented,
+    clippy::unwrap_used
+)]
+
 pub mod account;
 pub mod budget;
 pub mod category;

@@ -72,19 +72,18 @@ struct ImportRule {
 
 impl ImportRule {
     fn matches(&self, description: &str) -> bool {
-        if let Some(ref needle) = self.description_contains {
-            if !description
+        if let Some(ref needle) = self.description_contains
+            && !description
                 .to_ascii_lowercase()
                 .contains(&needle.to_ascii_lowercase())
-            {
-                return false;
-            }
+        {
+            return false;
         }
 
-        if let Some(ref regex) = self.description_regex {
-            if !regex.is_match(description) {
-                return false;
-            }
+        if let Some(ref regex) = self.description_regex
+            && !regex.is_match(description)
+        {
+            return false;
         }
 
         true
@@ -237,24 +236,21 @@ impl CsvImporter {
             Posting::new(counterparty_account.clone(), counterparty_amount.clone()),
         ];
 
-        if let Some(ref rule) = rule {
-            if let Some(category) = &rule.assign_category {
-                if let Some(counterparty_posting) = postings.get_mut(1) {
-                    counterparty_posting.category = Some(category.clone());
-                }
-            }
+        if let Some(rule) = rule
+            && let Some(category) = &rule.assign_category
+            && let Some(counterparty_posting) = postings.get_mut(1)
+        {
+            counterparty_posting.category = Some(category.clone());
         }
 
-        if let Some(ref column) = self.config.columns.category {
-            if let Some(value) = header_map
+        if let Some(ref column) = self.config.columns.category
+            && let Some(value) = header_map
                 .get(column)
                 .and_then(|idx| record.get(*idx))
                 .filter(|value| !value.trim().is_empty())
-            {
-                if let Some(counterparty_posting) = postings.get_mut(1) {
-                    counterparty_posting.category = Some(value.trim().to_string());
-                }
-            }
+            && let Some(counterparty_posting) = postings.get_mut(1)
+        {
+            counterparty_posting.category = Some(value.trim().to_string());
         }
 
         let mut metadata = crate::transaction::Metadata::new();
@@ -272,10 +268,10 @@ impl CsvImporter {
     }
 
     fn parse_date(&self, raw: &str) -> Option<NaiveDate> {
-        if let Some(ref fmt) = self.config.date_format {
-            if let Ok(date) = NaiveDate::parse_from_str(raw, fmt) {
-                return Some(date);
-            }
+        if let Some(ref fmt) = self.config.date_format
+            && let Ok(date) = NaiveDate::parse_from_str(raw, fmt)
+        {
+            return Some(date);
         }
 
         NaiveDate::parse_from_str(raw, "%Y-%m-%d")
@@ -317,8 +313,7 @@ fn parse_decimal(raw: &str) -> Result<rust_decimal::Decimal> {
 
     let cleaned = trimmed
         .trim_matches(|ch| ch == '(' || ch == ')')
-        .replace(',', "")
-        .replace('$', "")
+        .replace([',', '$'], "")
         .replace("R$", "")
         .replace("€", "");
 

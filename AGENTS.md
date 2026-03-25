@@ -10,6 +10,7 @@
 - `cargo fmt` formats all Rust sources using rustfmt.
 - `cargo check` performs a fast compile-time validation without producing binaries.
 - `cargo test` runs unit and integration tests, including `tests/numen_core.rs`.
+- `cargo clippy --all-targets --all-features -- -D warnings` runs lint checks and fails on any warning; use this as the quality gate before opening a PR.
 - Use `cargo doc --open` to review API documentation during development.
 
 ## Coding Style & Naming Conventions
@@ -22,6 +23,7 @@
 - Integration tests belong in `numen-core/tests/`; name files after the scenarios they cover (e.g., `analytics.rs` if added).
 - Use `cargo test -- --nocapture` when debugging to see printed output.
 - When introducing new analytics or import logic, add assertions to existing tests or create focused suites mirroring real ledger flows.
+- Run `cargo clippy --all-targets --all-features -- -D warnings` after making changes and fix all reported issues to certify the project is lint-clean.
 
 ## Commit & Pull Request Guidelines
 - Write commits in the present tense with concise scope descriptions (e.g., `Add budget overview weights`).
