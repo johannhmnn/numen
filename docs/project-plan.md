@@ -99,7 +99,6 @@ Numen is a single-user personal-finance application built around double-entry bo
 - Browser acceptance tests with `Playwright`
 - CI checks:
   - `cargo nextest run --workspace`
-  - `cargo test --doc --workspace`
   - `cargo fmt --check`
   - `cargo clippy --workspace --all-targets -- -D warnings`
   - `pnpm test`

@@ -24,9 +24,7 @@ Numen is a local-first personal-finance app built around double-entry bookkeepin
 - `just test-web`: run frontend unit/component tests
 - `just test-e2e`: run Playwright smoke tests
 - `just lint`: run Rust and frontend linting checks
-- `just check`: run the core non-E2E verification suite, including Rust doctests
-
-Rust doctests remain available separately via `cargo test --doc --workspace`.
+- `just check`: run the core non-E2E verification suite
 
 ## CI
 
