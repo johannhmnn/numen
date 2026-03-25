@@ -9,7 +9,7 @@ use numen_core::{
 use rust_decimal_macros::dec;
 
 fn make_account(name: &str, r#type: AccountType) -> Account {
-    Account::new(name, r#type).with_currency("USD")
+    Account::new(name, r#type).with_currency("BRL")
 }
 
 fn date(year: i32, month: u32, day: u32) -> NaiveDate {
@@ -18,7 +18,7 @@ fn date(year: i32, month: u32, day: u32) -> NaiveDate {
 
 #[test]
 fn transaction_must_be_balanced() {
-    let mut engine = Numen::new("USD");
+    let mut engine = Numen::new("BRL");
     engine
         .add_account(make_account("Assets:Cash", AccountType::Assets))
         .unwrap();
@@ -27,8 +27,8 @@ fn transaction_must_be_balanced() {
         .unwrap();
 
     let postings = vec![
-        Posting::new("Assets:Cash", Money::new(dec!(100), "USD")),
-        Posting::new("Expenses:Food", Money::new(dec!(-50), "USD")),
+        Posting::new("Assets:Cash", Money::new(dec!(100), "BRL")),
+        Posting::new("Expenses:Food", Money::new(dec!(-50), "BRL")),
     ];
     let tx = Transaction::new(date(2024, 1, 1), "Imbalanced", postings);
 
@@ -37,7 +37,7 @@ fn transaction_must_be_balanced() {
 
 #[test]
 fn category_rules_assign_postings() {
-    let mut engine = Numen::new("USD");
+    let mut engine = Numen::new("BRL");
     engine
         .add_account(make_account("Assets:Bank", AccountType::Assets))
         .unwrap();
@@ -57,8 +57,8 @@ fn category_rules_assign_postings() {
     engine.set_category_rules(vec![rule]);
 
     let postings = vec![
-        Posting::new("Assets:Bank", Money::new(dec!(-50), "USD")),
-        Posting::new("Expenses:Groceries", Money::new(dec!(50), "USD")),
+        Posting::new("Assets:Bank", Money::new(dec!(-50), "BRL")),
+        Posting::new("Expenses:Groceries", Money::new(dec!(50), "BRL")),
     ];
     let tx = Transaction::new(date(2024, 2, 1), "Mercado Central", postings);
     let id = tx.id;
@@ -76,7 +76,7 @@ fn category_rules_assign_postings() {
 
 #[test]
 fn budget_overview_detects_over_budget() {
-    let mut engine = Numen::new("USD");
+    let mut engine = Numen::new("BRL");
     engine
         .add_account(make_account("Assets:Bank", AccountType::Assets))
         .unwrap();
@@ -89,14 +89,14 @@ fn budget_overview_detects_over_budget() {
 
     engine.add_category(Category::new("Food", AccountType::Expenses));
     engine
-        .add_budget(Budget::new("Food", Money::new(dec!(5000), "USD")))
+        .add_budget(Budget::new("Food", Money::new(dec!(5000), "BRL")))
         .unwrap();
 
     // income transactions for two months
     for month in 1..=2 {
         let postings = vec![
-            Posting::new("Assets:Bank", Money::new(dec!(4000), "USD")),
-            Posting::new("Income:Salary", Money::new(dec!(-4000), "USD")),
+            Posting::new("Assets:Bank", Money::new(dec!(4000), "BRL")),
+            Posting::new("Income:Salary", Money::new(dec!(-4000), "BRL")),
         ];
         let tx = Transaction::new(date(2024, month, 1), "Salary", postings);
         engine.record_transaction(tx).unwrap();
@@ -118,7 +118,7 @@ fn budget_overview_detects_over_budget() {
 
 #[test]
 fn rolling_expense_metrics() {
-    let mut engine = Numen::new("USD");
+    let mut engine = Numen::new("BRL");
     engine
         .add_account(make_account("Assets:Bank", AccountType::Assets))
         .unwrap();
@@ -134,8 +134,8 @@ fn rolling_expense_metrics() {
 
     for (date, amount) in expenses {
         let postings = vec![
-            Posting::new("Assets:Bank", Money::new(-amount, "USD")),
-            Posting::new("Expenses:Daily", Money::new(amount, "USD")),
+            Posting::new("Assets:Bank", Money::new(-amount, "BRL")),
+            Posting::new("Expenses:Daily", Money::new(amount, "BRL")),
         ];
         let tx = Transaction::new(date, "Purchase", postings);
         engine.record_transaction(tx).unwrap();
@@ -170,7 +170,7 @@ fn csv_import_pipeline_creates_transactions() {
             asset_account: "Assets:Bank".into(),
             expense_account: Some("Expenses:Unknown".into()),
             income_account: Some("Income:Salary".into()),
-            currency: Some("USD".into()),
+            currency: Some("BRL".into()),
         },
         rules: vec![ImportRuleConfig {
             description_contains: Some("mercado".into()),
