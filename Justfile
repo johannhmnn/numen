@@ -26,5 +26,10 @@ check:
 	cd apps/web && pnpm check
 	cd apps/web && pnpm test:unit -- --run
 
+ci:
+	just lint
+	just check
+	just test-e2e
+
 install-playwright:
 	cd apps/web && pnpm exec playwright install
