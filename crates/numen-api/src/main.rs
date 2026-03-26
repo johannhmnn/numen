@@ -11,7 +11,9 @@ async fn main() {
 
     println!("numen-api listening on http://{addr}");
 
-    axum::serve(listener, numen_api::app())
+    let app = numen_api::app().await.expect("build numen-api app");
+
+    axum::serve(listener, app)
         .await
         .expect("numen-api server failed");
 }

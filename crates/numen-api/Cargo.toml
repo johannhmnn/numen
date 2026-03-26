@@ -5,13 +5,19 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+async-trait.workspace = true
 axum.workspace = true
 numen-core = { path = "../numen-core" }
+rust_decimal.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+sqlx.workspace = true
+thiserror.workspace = true
+time.workspace = true
 tokio.workspace = true
 tower-http.workspace = true
+uuid.workspace = true
 
 [dev-dependencies]
-tower.workspace = true
 serde_json.workspace = true
+tower.workspace = true
