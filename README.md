@@ -1,6 +1,6 @@
 # Numen
 
-Numen is a local-first personal-finance app built around double-entry bookkeeping. This repository currently contains the Feature 0 foundation: a Rust workspace, a local HTTP API shell, and a SvelteKit frontend scaffold with smoke tests and CI wiring.
+Numen is a local-first personal-finance app built around double-entry bookkeeping. This repository currently contains the Feature 0 foundation: a Rust workspace, a local HTTP API shell, a SvelteKit frontend scaffold, and committed Woodpecker CI coverage for Rust, frontend checks, and one Playwright smoke test.
 
 ## Prerequisites
 
@@ -29,4 +29,10 @@ Numen is a local-first personal-finance app built around double-entry bookkeepin
 
 ## CI
 
-CI is intentionally not committed yet. Once Codeberg access is approved, the pipeline should stay lightweight and cover Rust quality gates, frontend quality gates, and one browser smoke test.
+Woodpecker workflows live under `.woodpecker/`:
+
+- `rust.yaml`: installs `cargo-nextest` from the official `0.9` release-series installer and runs `fmt`, `clippy`, and `nextest`
+- `web.yaml`: runs frontend type checks, linting, and Vitest component coverage
+- `e2e.yaml`: runs the Playwright smoke test in the official Playwright container
+
+Local verification uses `just`; Woodpecker runs the equivalent commands inline in each workflow.

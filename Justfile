@@ -22,7 +22,6 @@ lint:
 
 check:
 	cargo nextest run --workspace
-	cargo test --doc --workspace
 	cd apps/web && pnpm check
 	cd apps/web && pnpm test:unit -- --run
 

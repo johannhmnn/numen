@@ -6,6 +6,8 @@ This roadmap breaks the project into vertical slices so we can implement and ver
 
 Goal: create a clean workspace and delivery pipeline for Rust + SvelteKit development.
 
+Status: baseline delivered, including committed Woodpecker CI workflows for Rust checks, frontend checks, and Playwright smoke coverage.
+
 - Add Cargo workspace and frontend app layout
 - Configure Rust formatting, linting, and test commands
 - Configure frontend formatting, linting, unit-test, and E2E commands

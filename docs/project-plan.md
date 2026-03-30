@@ -97,12 +97,16 @@ Numen is a single-user personal-finance application built around double-entry bo
 - Rust API integration tests against HTTP endpoints and SQLite
 - Frontend tests with `Vitest` and `@testing-library/svelte`
 - Browser acceptance tests with `Playwright`
+- Woodpecker CI workflows under `.woodpecker/`
+- Local verification uses `just`; Woodpecker runs the equivalent commands directly in each workflow
 - CI checks:
   - `cargo nextest run --workspace`
   - `cargo fmt --check`
   - `cargo clippy --workspace --all-targets -- -D warnings`
-  - `pnpm test`
-  - `pnpm test:e2e`
+  - `pnpm --dir apps/web check`
+  - `pnpm --dir apps/web lint`
+  - `pnpm --dir apps/web test:unit -- --run`
+  - `pnpm --dir apps/web test:e2e`
 
 ## Assumptions
 

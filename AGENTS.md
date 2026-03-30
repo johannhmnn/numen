@@ -129,7 +129,7 @@ Browser-backed frontend tests may fail in restricted sandboxes even when the pro
 
 - Package manager: `pnpm`
 - Root task runner: `just`
-- No committed CI workflow files yet
+- Committed Woodpecker CI workflow files live under `.woodpecker/`
 - No committed deployment config beyond the static SvelteKit adapter
 - No SQLite schema, migrations, or persistence code committed yet
 - No ledger model, reporting engine, CSV import pipeline, or reconciliation flow committed yet
@@ -181,6 +181,6 @@ If a roadmap item becomes implemented or a listed assumption stops being true, u
 
 ## Summary
 
-- Stale: stack and testing language implied SQLite, reporting, import, reconciliation, CI, and broader backend/frontend coverage that are not committed yet.
-- Added: current repo reality, verified commands, `just` workflow, Svelte 5 runes constraints, anti-overengineering rules, and documentation-update expectations.
-- Removed or corrected: unconditional CI claim, overly advanced implementation assumptions, and generic guidance that did not match the present scaffold.
+- Stale: stack and testing language implied SQLite, reporting, import, reconciliation, and broader backend/frontend coverage that are not committed yet.
+- Added: current repo reality, verified commands, committed Woodpecker CI context, `just` workflow, Svelte 5 runes constraints, anti-overengineering rules, and documentation-update expectations.
+- Removed or corrected: overly advanced implementation assumptions and generic guidance that did not match the present scaffold.

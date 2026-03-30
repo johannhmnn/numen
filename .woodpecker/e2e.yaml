@@ -1,0 +1,11 @@
+when:
+  event: [push, pull_request]
+
+steps:
+  e2e:
+    image: mcr.microsoft.com/playwright:v1.58.2-noble
+    commands:
+      - corepack enable
+      - corepack prepare pnpm@10.32.0 --activate
+      - pnpm install --frozen-lockfile
+      - pnpm --dir apps/web test:e2e
