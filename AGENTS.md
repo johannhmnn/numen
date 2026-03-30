@@ -19,6 +19,16 @@ The repository is still at Feature 0 foundation. The current codebase is a scaff
 - Prefer the simplest design that supports the current slice. Refactor when duplication becomes real, not anticipated.
 - Keep changes local and incremental. Avoid repo-wide rewrites when a focused patch is enough.
 
+## Testing guidelines
+
+- Follow test-driven development by default.
+- Start with a failing test that describes the next behavior change.
+- Implement the smallest change that makes the test pass.
+- Use the repository's existing test and coverage tooling to keep feedback tight and coverage visible.
+- When fixing a bug, add or extend a regression test that fails before the fix and passes after it.
+- Do not ship production behavior without automated coverage proving it.
+- If a change is hard to test, pause and discuss refactoring options with your collaborator before adding indirection, broad mocks, or untestable code paths.
+
 ## Core Product Decisions
 
 - Account types: `Assets`, `Liabilities`, `Equity`, `Income`, `Expenses`
