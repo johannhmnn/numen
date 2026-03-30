@@ -27,3 +27,6 @@ coverage/
 playwright-report/
 test-results/
 .DS_Store
+
+# ---> Local database files
+numen.db
