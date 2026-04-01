@@ -32,7 +32,7 @@ Numen is a local-first personal-finance app built around double-entry bookkeepin
 Woodpecker workflows live under `.woodpecker/`:
 
 - `rust.yaml`: installs `cargo-nextest` from the official `0.9` release-series installer and runs `fmt`, `clippy`, and `nextest`
-- `web.yaml`: runs frontend type checks, linting, and Vitest component coverage
+- `web.yaml`: installs Playwright Chromium for browser-backed Vitest, then runs frontend type checks, linting, and component coverage
 - `e2e.yaml`: runs the Playwright smoke test in the official Playwright container
 
 Local verification uses `just`; Woodpecker runs the equivalent commands inline in each workflow.
