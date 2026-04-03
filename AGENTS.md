@@ -8,7 +8,7 @@ The repository is still at Feature 0 foundation. The current codebase is a scaff
 
 - `crates/numen-core` contains placeholder readiness code only
 - `crates/numen-api` serves a minimal `GET /health` endpoint
-- `apps/web` is a static SvelteKit shell with one component test and one Playwright smoke test
+- `apps/web` is a static SvelteKit shell with browser-stored `light`/`dark`/`system` appearance support, component coverage, and Playwright smoke coverage
 - SQLite, ledger primitives, transaction entry, reconciliation, import, and reporting are planned but not implemented here yet
 
 ## Working Agreements
@@ -153,12 +153,13 @@ Current execution order:
 2. Ledger primitives and invariants
 3. Ledger storage and balance queries
 4. Structured transaction entry
-5. Balance snapshots and historical adjustment
-6. CSV import
-7. Category reporting
-8. Expense trends
-9. Account-focused spending analysis
-10. Hardening and first release candidate
+5. Theme system and appearance controls
+6. Balance snapshots and historical adjustment
+7. CSV import
+8. Category reporting
+9. Expense trends
+10. Account-focused spending analysis
+11. Hardening and first release candidate
 
 Deferred after v1:
 

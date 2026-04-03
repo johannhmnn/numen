@@ -9,10 +9,7 @@
 		NumenApiError,
 		createNumenApiClient
 	} from '$lib/api';
-	import {
-		ACCOUNT_TYPE_OPTIONS,
-		buildAccountSetupSummary
-	} from '$lib/ledger/accounts';
+	import { ACCOUNT_TYPE_OPTIONS, buildAccountSetupSummary } from '$lib/ledger/accounts';
 	import {
 		buildGuidedTransactionFieldErrors,
 		createGuidedTransactionSchema,
@@ -187,12 +184,16 @@
 	function syncTransactionAccountSelections(nextAccounts: Account[]) {
 		const nextSetup = buildAccountSetupSummary(nextAccounts);
 
-		if (!nextSetup.fundingAccounts.some((account) => account.name === transactionForm.fundingAccount)) {
+		if (
+			!nextSetup.fundingAccounts.some((account) => account.name === transactionForm.fundingAccount)
+		) {
 			transactionForm.fundingAccount = nextSetup.fundingAccounts[0]?.name ?? '';
 		}
 
 		if (
-			!nextSetup.categoryAccounts.some((account) => account.name === transactionForm.categoryAccount)
+			!nextSetup.categoryAccounts.some(
+				(account) => account.name === transactionForm.categoryAccount
+			)
 		) {
 			transactionForm.categoryAccount = nextSetup.categoryAccounts[0]?.name ?? '';
 		}
@@ -293,10 +294,16 @@
 		<main class="entry-stage" aria-labelledby="entry-stage-heading">
 			<div class="section-heading">
 				<p class="section-kicker">Structured entry</p>
-				<h2 id="entry-stage-heading">Record one funding account, one category account, one clear amount.</h2>
+				<h2 id="entry-stage-heading">
+					Record one funding account, one category account, one clear amount.
+				</h2>
 			</div>
 
-			<form class="entry-form" aria-label="Guided transaction entry" onsubmit={handleCreateTransaction}>
+			<form
+				class="entry-form"
+				aria-label="Guided transaction entry"
+				onsubmit={handleCreateTransaction}
+			>
 				<div class="field-row split">
 					<label>
 						<span>Date</span>
@@ -353,7 +360,9 @@
 							bind:value={transactionForm.fundingAccount}
 							aria-invalid={Boolean(transactionFieldErrors.fundingAccount)}
 						>
-							<option value="" disabled={setup.fundingAccounts.length > 0}>Select a funding account</option>
+							<option value="" disabled={setup.fundingAccounts.length > 0}
+								>Select a funding account</option
+							>
 							{#each setup.fundingAccounts as account (account.name)}
 								<option value={account.name}>{account.name}</option>
 							{/each}
@@ -365,7 +374,9 @@
 							bind:value={transactionForm.categoryAccount}
 							aria-invalid={Boolean(transactionFieldErrors.categoryAccount)}
 						>
-							<option value="" disabled={setup.categoryAccounts.length > 0}>Select a category account</option>
+							<option value="" disabled={setup.categoryAccounts.length > 0}
+								>Select a category account</option
+							>
 							{#each setup.categoryAccounts as account (account.name)}
 								<option value={account.name}>{account.name}</option>
 							{/each}
@@ -390,7 +401,9 @@
 				<section class="posting-preview" aria-label="Posting preview">
 					<div class="preview-heading">
 						<span>Ledger effect</span>
-						<p>{transactionForm.categoryAccount || 'Choose accounts to preview the two postings.'}</p>
+						<p>
+							{transactionForm.categoryAccount || 'Choose accounts to preview the two postings.'}
+						</p>
 					</div>
 
 					{#if postingPreview.length === 2}
@@ -449,7 +462,9 @@
 		<section class="recent-panel" aria-labelledby="recent-transactions-heading">
 			<div class="section-heading">
 				<p class="section-kicker">Recent ledger</p>
-				<h2 id="recent-transactions-heading">Newest transactions stay visible the moment they land.</h2>
+				<h2 id="recent-transactions-heading">
+					Newest transactions stay visible the moment they land.
+				</h2>
 			</div>
 
 			{#if transactionsState === 'loading'}
@@ -487,37 +502,9 @@
 </section>
 
 <style>
-	:global(body) {
-		--paper: #f5ead9;
-		--paper-deep: #e9dcc7;
-		--ink: #26180f;
-		--ink-soft: #5a4739;
-		--line: rgba(58, 38, 25, 0.16);
-		--accent: #8b4f2b;
-		--accent-soft: rgba(139, 79, 43, 0.12);
-		margin: 0;
-		font-family: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', serif;
-		color: var(--ink);
-		background:
-			linear-gradient(180deg, rgba(255, 252, 247, 0.82), rgba(245, 234, 217, 0.96)),
-			repeating-linear-gradient(
-				180deg,
-				rgba(114, 88, 64, 0.055) 0,
-				rgba(114, 88, 64, 0.055) 1px,
-				transparent 1px,
-				transparent 40px
-			),
-			radial-gradient(circle at top left, rgba(181, 117, 63, 0.18), transparent 36%),
-			linear-gradient(180deg, #fff8ee 0%, #efe1cb 100%);
-	}
-
-	:global(*) {
-		box-sizing: border-box;
-	}
-
 	.workspace {
 		min-height: 100vh;
-		padding: 2rem 1rem 2.5rem;
+		padding: 1.25rem 1rem 2.5rem;
 		position: relative;
 		overflow: hidden;
 	}
@@ -526,9 +513,7 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background:
-			radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.42), transparent 0 30%),
-			radial-gradient(circle at 88% 18%, rgba(112, 69, 36, 0.12), transparent 0 18%);
+		background: var(--page-overlay);
 		pointer-events: none;
 	}
 
@@ -594,10 +579,10 @@
 	.rail,
 	.entry-stage,
 	.recent-panel {
-		background: rgba(255, 250, 244, 0.72);
+		background: var(--paper-lift);
 		border: 1px solid var(--line);
 		backdrop-filter: blur(14px);
-		box-shadow: 0 24px 60px rgba(69, 42, 25, 0.07);
+		box-shadow: var(--card-shadow);
 	}
 
 	.rail,
@@ -621,7 +606,7 @@
 		width: 11rem;
 		height: 11rem;
 		border-radius: 50%;
-		background: radial-gradient(circle, rgba(139, 79, 43, 0.16), transparent 70%);
+		background: var(--stage-aura);
 		pointer-events: none;
 	}
 
@@ -662,7 +647,7 @@
 		display: grid;
 		gap: 0.18rem;
 		padding: 0.72rem 0;
-		border-top: 1px solid rgba(58, 38, 25, 0.08);
+		border-top: 1px solid var(--line-soft);
 	}
 
 	.ledger-block li:first-child {
@@ -687,8 +672,8 @@
 		display: grid;
 		gap: 0.55rem;
 		padding: 1rem 0 1.1rem;
-		border-top: 1px solid rgba(58, 38, 25, 0.08);
-		border-bottom: 1px solid rgba(58, 38, 25, 0.08);
+		border-top: 1px solid var(--line-soft);
+		border-bottom: 1px solid var(--line-soft);
 		margin-bottom: 1rem;
 	}
 
@@ -704,7 +689,7 @@
 		width: fit-content;
 		padding: 0.45rem 0.7rem;
 		border-radius: 999px;
-		background: rgba(38, 24, 15, 0.06);
+		background: var(--status-chip-surface);
 		font-family: 'IBM Plex Mono', 'SFMono-Regular', 'Courier New', monospace;
 		font-size: 0.72rem;
 		letter-spacing: 0.02em;
@@ -713,11 +698,11 @@
 
 	.status-chip--error,
 	.inline-error {
-		color: #8c2c22;
+		color: var(--danger);
 	}
 
 	.status-chip--error {
-		background: rgba(163, 58, 46, 0.1);
+		background: var(--danger-soft);
 	}
 
 	.status-stack {
@@ -758,9 +743,8 @@
 	select,
 	.tags,
 	.posting-preview {
-		border: 1px solid rgba(73, 43, 24, 0.16);
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(249, 240, 227, 0.85));
+		border: 1px solid var(--field-border);
+		background: var(--field-surface);
 		border-radius: 1rem;
 		padding: 0.95rem 1rem;
 		min-height: 3.35rem;
@@ -777,8 +761,8 @@
 	.tags:hover,
 	.posting-preview:hover {
 		transform: translateY(-1px);
-		border-color: rgba(139, 79, 43, 0.32);
-		box-shadow: 0 12px 24px rgba(96, 58, 30, 0.08);
+		border-color: var(--field-border-hover);
+		box-shadow: var(--field-shadow);
 	}
 
 	input {
@@ -794,17 +778,17 @@
 
 	input[aria-invalid='true'],
 	select[aria-invalid='true'] {
-		border-color: rgba(163, 58, 46, 0.55);
-		box-shadow: 0 0 0 1px rgba(163, 58, 46, 0.16);
+		border-color: var(--danger-line);
+		box-shadow: 0 0 0 1px var(--danger-ring);
 	}
 
 	input:focus-visible,
 	select:focus-visible,
 	button:focus-visible,
 	.ghost-button:focus-visible {
-		outline: 2px solid rgba(139, 79, 43, 0.42);
+		outline: 2px solid var(--focus-ring);
 		outline-offset: 2px;
-		border-color: rgba(139, 79, 43, 0.42);
+		border-color: var(--field-border-hover);
 	}
 
 	.tags {
@@ -843,7 +827,7 @@
 		font-family: 'IBM Plex Mono', 'SFMono-Regular', 'Courier New', monospace;
 		font-size: 0.72rem;
 		line-height: 1.4;
-		color: #8c2c22;
+		color: var(--danger);
 	}
 
 	.posting-preview {
@@ -891,7 +875,7 @@
 		justify-content: space-between;
 		gap: 0.8rem;
 		padding-top: 0.55rem;
-		border-top: 1px solid rgba(58, 38, 25, 0.08);
+		border-top: 1px solid var(--line-soft);
 	}
 
 	.preview-list li:first-child {
@@ -926,9 +910,9 @@
 		padding: 0.9rem 1.25rem;
 		font: inherit;
 		font-weight: 600;
-		background: linear-gradient(180deg, #8f5330, #734024);
-		color: #fff7f1;
-		box-shadow: 0 16px 32px rgba(103, 60, 32, 0.18);
+		background: var(--button-surface);
+		color: var(--button-ink);
+		box-shadow: var(--button-shadow);
 		opacity: 0.64;
 		cursor: not-allowed;
 	}
@@ -956,8 +940,8 @@
 	}
 
 	.ghost-button {
-		border: 1px solid rgba(73, 43, 24, 0.16);
-		background: rgba(255, 250, 244, 0.84);
+		border: 1px solid var(--field-border);
+		background: var(--ghost-surface);
 		color: var(--ink);
 		box-shadow: none;
 		cursor: pointer;
@@ -976,7 +960,7 @@
 		font-family: 'IBM Plex Mono', 'SFMono-Regular', 'Courier New', monospace;
 		font-size: 0.74rem;
 		line-height: 1.4;
-		color: #2a5a37;
+		color: var(--success);
 	}
 
 	.empty-entry {
@@ -1004,7 +988,7 @@
 		gap: 0.9rem;
 		align-items: start;
 		padding: 0.95rem 0;
-		border-top: 1px solid rgba(58, 38, 25, 0.1);
+		border-top: 1px solid var(--line-strong);
 		animation: float-in 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 		animation-delay: var(--entry-delay, 0ms);
 	}
@@ -1095,7 +1079,7 @@
 
 	@media (max-width: 40rem) {
 		.workspace {
-			padding: 1rem 0.75rem 1.5rem;
+			padding: 0.8rem 0.75rem 1.5rem;
 		}
 
 		.entry-stage,

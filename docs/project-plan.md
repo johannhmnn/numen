@@ -4,6 +4,8 @@
 
 Numen is a single-user personal-finance application built around double-entry bookkeeping. The first milestone focuses on a rigorous ledger core, structured transaction entry, early CSV import for bank and credit-card history, and dated balance snapshots that reconcile the ledger to a known real-world account balance even when older history is missing.
 
+The frontend also carries a shared appearance system with `light`, `dark`, and `system` modes so each product slice can reuse one cohesive visual foundation instead of restyling screens independently.
+
 ## Product Decisions
 
 - Use classic account types: `Assets`, `Liabilities`, `Equity`, `Income`, `Expenses`.
@@ -30,6 +32,7 @@ Numen is a single-user personal-finance application built around double-entry bo
 - App shape: local-first web app with a browser UI backed by a local Rust process
 - Frontend runtime: static SPA build
 - UI/backend boundary: local `HTTP/JSON` API
+- Appearance preferences: browser-local storage with document-root theme application before hydration
 - Local persistence: `SQLite`
 - Acceptance strategy: domain tests + API tests + one representative E2E browser flow per feature
 
@@ -45,6 +48,7 @@ Numen is a single-user personal-finance application built around double-entry bo
   - static asset serving for the built frontend
 - `apps/web`
   - SvelteKit SPA for data entry, import, balances, and charts
+  - shared theme tokens and appearance controls for `light`, `dark`, and `system`
 
 ## Selected Libraries
 
@@ -83,6 +87,13 @@ Numen is a single-user personal-finance application built around double-entry bo
   - `account`
   - `date`
   - `actual_balance`
+- `ThemePreference`
+  - `light`
+  - `dark`
+  - `system`
+- `ResolvedTheme`
+  - `light`
+  - `dark`
 
 ## Reconciliation Flow
 
@@ -97,6 +108,7 @@ Numen is a single-user personal-finance application built around double-entry bo
 - Rust API integration tests against HTTP endpoints and SQLite
 - Frontend tests with `Vitest` and `@testing-library/svelte`
 - Browser acceptance tests with `Playwright`
+- Theme coverage verifies default `system`, saved preference override, and live OS-theme following
 - Woodpecker CI workflows under `.woodpecker/`
 - Local verification uses `just`; Woodpecker runs the equivalent commands directly in each workflow
 - CI checks:

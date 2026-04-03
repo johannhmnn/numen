@@ -65,6 +65,24 @@ Tests:
 - UI form validation for required fields
 - one browser-level happy-path flow for entering and viewing a transaction
 
+## Feature 3A: Theme System And Appearance Controls
+
+Goal: add a shared appearance foundation before later frontend slices expand the UI surface area.
+
+- Centralize global design tokens for the existing warm ledger aesthetic and a deliberate dark companion theme
+- Add an accessible three-state toggle for `light`, `dark`, and `system`
+- Default to `system` and store the preference locally in the browser
+- Resolve `system` from `prefers-color-scheme` and react when the OS theme changes
+- Apply the resolved theme at the document root before hydration to avoid theme flash on load
+
+Tests:
+
+- defaults to `system` when no preference exists
+- saved preference overrides OS preference
+- `system` mode updates when the OS preference changes
+- toggle exposes correct accessible selected state for all three options
+- browser flow covers initial render in light and dark system modes plus override switching
+
 ## Feature 4: Balance Snapshots And Historical Adjustment
 
 Goal: reconcile incomplete transaction history with a known real-world balance.

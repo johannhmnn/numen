@@ -3,6 +3,34 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			(() => {
+				const storageKey = 'numen-theme-preference';
+				const root = document.documentElement;
+				const getSystemTheme = () =>
+					window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				const isThemePreference = (value) =>
+					value === 'light' || value === 'dark' || value === 'system';
+
+				let preference = 'system';
+
+				try {
+					const storedPreference = window.localStorage.getItem(storageKey);
+
+					if (isThemePreference(storedPreference)) {
+						preference = storedPreference;
+					}
+				} catch {
+					preference = 'system';
+				}
+
+				const resolvedTheme = preference === 'system' ? getSystemTheme() : preference;
+
+				root.dataset.themePreference = preference;
+				root.dataset.theme = resolvedTheme;
+				root.style.colorScheme = resolvedTheme;
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

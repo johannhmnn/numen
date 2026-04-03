@@ -47,6 +47,7 @@ test('guided transaction entry works end to end in the browser', async ({ page }
 		throw new Error(`Unhandled transactions route method: ${method}`);
 	});
 
+	await page.emulateMedia({ colorScheme: 'dark' });
 	await page.goto('/');
 
 	await expect(
@@ -57,9 +58,27 @@ test('guided transaction entry works end to end in the browser', async ({ page }
 	await expect(
 		page.getByRole('heading', { name: 'Choose the accounts that frame each entry.' })
 	).toBeVisible();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+	await expect(page.getByRole('radio', { name: 'System' })).toBeChecked();
 	await expect(
 		page.getByText('Record a transaction and it will appear here as your latest ledger move.')
 	).toBeVisible();
+
+	await page.getByRole('radio', { name: 'Light' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'light');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+	await expect(page.getByRole('radio', { name: 'Light' })).toBeChecked();
+
+	await page.getByRole('radio', { name: 'Dark' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'dark');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+	await expect(page.getByRole('radio', { name: 'Dark' })).toBeChecked();
+
+	await page.getByRole('radio', { name: 'System' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+	await expect(page.getByRole('radio', { name: 'System' })).toBeChecked();
 
 	const accountForm = page.getByRole('form', { name: 'Add account' });
 	const fundingSection = page.getByLabel('Funding accounts');
