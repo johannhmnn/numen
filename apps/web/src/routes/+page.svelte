@@ -1,10 +1,13 @@
 <script lang="ts">
-	import FoundationShell from '$lib/components/FoundationShell.svelte';
+	import LedgerWorkspace from '$lib/components/LedgerWorkspace.svelte';
 </script>
 
 <svelte:head>
 	<title>Numen</title>
-	<meta name="description" content="Local-first double-entry bookkeeping foundation for Numen." />
+	<meta
+		name="description"
+		content="Structured transaction entry workspace for Numen's local-first double-entry ledger."
+	/>
 </svelte:head>
 
-<FoundationShell />
+<LedgerWorkspace />

@@ -12,7 +12,7 @@ use axum::{
 };
 use dto::{
     AccountResponse, BalanceResponse, CreateAccountRequest, CreateTransactionRequest,
-    StatusResponse,
+    StatusResponse, TransactionResponse,
 };
 use error::ApiError;
 use repository::{LedgerRepository, RepositoryError, SqliteLedgerRepository};
@@ -44,7 +44,7 @@ fn app_with_repository(repository: Arc<dyn LedgerRepository>) -> Router {
     Router::new()
         .route("/health", get(health))
         .route("/accounts", post(create_account).get(list_accounts))
-        .route("/transactions", post(create_transaction))
+        .route("/transactions", post(create_transaction).get(list_transactions))
         .route("/accounts/{name}/balance", get(get_balance))
         .with_state(state)
 }
@@ -91,11 +91,25 @@ async fn create_transaction(
             StatusCode::CREATED,
             Json(StatusResponse { status: "created" }),
         )),
-        Err(RepositoryError::AccountNotFound(name)) => Err(ApiError::BadRequest(format!(
-            "posting references unknown account `{name}`"
-        ))),
+        Err(RepositoryError::AccountNotFound(name)) => Err(ApiError::UnprocessableEntity(
+            format!("posting references unknown account `{name}`")
+        )),
         Err(error) => Err(error.into()),
     }
+}
+
+async fn list_transactions(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<TransactionResponse>>, ApiError> {
+    let transactions = state
+        .repository
+        .list_transactions()
+        .await?
+        .into_iter()
+        .map(TransactionResponse::from)
+        .collect();
+
+    Ok(Json(transactions))
 }
 
 async fn get_balance(
@@ -286,6 +300,134 @@ mod tests {
         assert_eq!(
             balance_payload,
             json!({ "account": "Expenses:Groceries", "balance": "12.50" })
+        );
+    }
+
+    #[tokio::test]
+    async fn list_transactions_endpoint_returns_newest_first() {
+        let app = test_app().await;
+        let app = create_account_through_http(app, "Assets:Checking", "Assets").await;
+        let app = create_account_through_http(app, "Expenses:Groceries", "Expenses").await;
+
+        for payload in [
+            json!({
+                "date": "2026-03-25",
+                "title": "Groceries",
+                "payee": "Market",
+                "primary_category": "Groceries",
+                "tags": ["food", "home"],
+                "postings": [
+                    { "account": "Assets:Checking", "amount": "-12.50" },
+                    { "account": "Expenses:Groceries", "amount": "12.50" }
+                ]
+            }),
+            json!({
+                "date": "2026-03-26",
+                "title": "Dinner",
+                "payee": "Bistro",
+                "primary_category": "Dining",
+                "tags": ["evening"],
+                "postings": [
+                    { "account": "Assets:Checking", "amount": "-42.00" },
+                    { "account": "Expenses:Groceries", "amount": "42.00" }
+                ]
+            }),
+        ] {
+            let response = app
+                .clone()
+                .oneshot(
+                    Request::builder()
+                        .method("POST")
+                        .uri("/transactions")
+                        .header("content-type", "application/json")
+                        .body(Body::from(payload.to_string()))
+                        .expect("request"),
+                )
+                .await
+                .expect("transaction response");
+
+            assert_eq!(response.status(), StatusCode::CREATED);
+        }
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/transactions")
+                    .body(Body::empty())
+                    .expect("request"),
+            )
+            .await
+            .expect("response");
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let payload = read_json(response).await;
+
+        assert_eq!(
+            payload,
+            json!([
+                {
+                    "date": "2026-03-26",
+                    "title": "Dinner",
+                    "payee": "Bistro",
+                    "primary_category": "Dining",
+                    "tags": ["evening"],
+                    "postings": [
+                        { "account": "Assets:Checking", "amount": "-42.00" },
+                        { "account": "Expenses:Groceries", "amount": "42.00" }
+                    ]
+                },
+                {
+                    "date": "2026-03-25",
+                    "title": "Groceries",
+                    "payee": "Market",
+                    "primary_category": "Groceries",
+                    "tags": ["food", "home"],
+                    "postings": [
+                        { "account": "Assets:Checking", "amount": "-12.50" },
+                        { "account": "Expenses:Groceries", "amount": "12.50" }
+                    ]
+                }
+            ])
+        );
+    }
+
+    #[tokio::test]
+    async fn create_transaction_returns_unprocessable_entity_for_unknown_posting_account() {
+        let app = test_app().await;
+        let app = create_account_through_http(app, "Assets:Checking", "Assets").await;
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/transactions")
+                    .header("content-type", "application/json")
+                    .body(Body::from(
+                        json!({
+                            "date": "2026-03-30",
+                            "title": "Groceries",
+                            "payee": "Market",
+                            "primary_category": "Groceries",
+                            "tags": ["food"],
+                            "postings": [
+                                { "account": "Assets:Checking", "amount": "-12.50" },
+                                { "account": "Expenses:Missing", "amount": "12.50" }
+                            ]
+                        })
+                        .to_string(),
+                    ))
+                    .expect("request"),
+            )
+            .await
+            .expect("response");
+
+        assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
+
+        let payload = read_json(response).await;
+
+        assert_eq!(
+            payload,
+            json!({ "error": "posting references unknown account `Expenses:Missing`" })
         );
     }
 

@@ -1,9 +1,7 @@
 use std::str::FromStr;
 
 use async_trait::async_trait;
-#[cfg(test)]
-use numen_core::Posting;
-use numen_core::{Account, AccountType, DomainError, Money, Transaction};
+use numen_core::{Account, AccountType, DomainError, Money, Posting, Transaction};
 use rust_decimal::Decimal;
 use sqlx::{
     Row, SqlitePool,
@@ -41,7 +39,6 @@ pub trait LedgerRepository: Send + Sync {
     async fn create_account(&self, account: &Account) -> Result<Account, RepositoryError>;
     async fn list_accounts(&self) -> Result<Vec<Account>, RepositoryError>;
     async fn create_transaction(&self, transaction: &Transaction) -> Result<(), RepositoryError>;
-    #[cfg(test)]
     async fn list_transactions(&self) -> Result<Vec<Transaction>, RepositoryError>;
     async fn account_balance(&self, account_name: &str) -> Result<Money, RepositoryError>;
 }
@@ -174,10 +171,11 @@ impl LedgerRepository for SqliteLedgerRepository {
         Ok(())
     }
 
-    #[cfg(test)]
     async fn list_transactions(&self) -> Result<Vec<Transaction>, RepositoryError> {
         let rows = sqlx::query(
-            "SELECT id, date, title, payee, primary_category FROM transactions ORDER BY date, id",
+            "SELECT id, date, title, payee, primary_category
+             FROM transactions
+             ORDER BY date DESC, id DESC",
         )
         .fetch_all(&self.pool)
         .await?;
@@ -340,6 +338,45 @@ mod tests {
             .expect("list transactions");
 
         assert_eq!(transactions, vec![transaction]);
+    }
+
+    #[tokio::test]
+    async fn list_transactions_returns_newest_first() {
+        let repository = SqliteLedgerRepository::connect_in_memory()
+            .await
+            .expect("repository");
+        seed_accounts(&repository).await;
+        let older = sample_transaction();
+        let newer = Transaction::new(
+            Some(date!(2026 - 03 - 26)),
+            "Dinner",
+            Some("Bistro".to_owned()),
+            Some("Dining".to_owned()),
+            vec!["evening".to_owned()],
+            vec![
+                Posting::new("Assets:Checking", Money::new(Decimal::new(-4200, 2)))
+                    .expect("posting"),
+                Posting::new("Expenses:Groceries", Money::new(Decimal::new(4200, 2)))
+                    .expect("posting"),
+            ],
+        )
+        .expect("transaction");
+
+        repository
+            .create_transaction(&older)
+            .await
+            .expect("older transaction");
+        repository
+            .create_transaction(&newer)
+            .await
+            .expect("newer transaction");
+
+        let transactions = repository
+            .list_transactions()
+            .await
+            .expect("list transactions");
+
+        assert_eq!(transactions, vec![newer, older]);
     }
 
     #[tokio::test]

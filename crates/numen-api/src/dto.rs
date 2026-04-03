@@ -41,6 +41,45 @@ impl From<Account> for AccountResponse {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct PostingResponse {
+    pub account: String,
+    pub amount: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct TransactionResponse {
+    pub date: String,
+    pub title: String,
+    pub payee: Option<String>,
+    pub primary_category: Option<String>,
+    pub tags: Vec<String>,
+    pub postings: Vec<PostingResponse>,
+}
+
+impl From<Transaction> for TransactionResponse {
+    fn from(transaction: Transaction) -> Self {
+        Self {
+            date: transaction
+                .date()
+                .format(DATE_FORMAT)
+                .expect("ISO date formatting should always succeed"),
+            title: transaction.title().to_owned(),
+            payee: transaction.payee().map(str::to_owned),
+            primary_category: transaction.primary_category().map(str::to_owned),
+            tags: transaction.tags().to_vec(),
+            postings: transaction
+                .postings()
+                .iter()
+                .map(|posting| PostingResponse {
+                    account: posting.account().to_owned(),
+                    amount: posting.amount().value().to_string(),
+                })
+                .collect(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct CreatePostingRequest {
     pub account: String,
