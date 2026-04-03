@@ -8,7 +8,7 @@ describe('buildAccountSetupSummary', () => {
 
 		expect(summary.canRecordTransactions).toBe(false);
 		expect(summary.headline).toBe(
-			'Create at least one category account to unlock structured entry.'
+			'Crie pelo menos uma conta de categoria para liberar o lancamento guiado.'
 		);
 		expect(summary.fundingAccounts.map((account) => account.name)).toEqual(['Assets:Checking']);
 		expect(summary.categoryAccounts).toEqual([]);
@@ -21,7 +21,9 @@ describe('buildAccountSetupSummary', () => {
 		]);
 
 		expect(summary.canRecordTransactions).toBe(true);
-		expect(summary.headline).toBe('Funding and category accounts are ready for guided entry.');
+		expect(summary.headline).toBe(
+			'As contas de origem e categoria estao prontas para o lancamento guiado.'
+		);
 		expect(summary.fundingAccounts.map((account) => account.name)).toEqual(['Assets:Checking']);
 		expect(summary.categoryAccounts.map((account) => account.name)).toEqual(['Expenses:Dining']);
 	});

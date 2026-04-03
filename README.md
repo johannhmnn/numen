@@ -1,6 +1,6 @@
 # Numen
 
-Numen is a local-first personal-finance app built around double-entry bookkeeping. This repository currently contains the Feature 0 foundation: a Rust workspace, a local HTTP API shell, a SvelteKit frontend scaffold, browser-local appearance support with `light`/`dark`/`system`, and committed Woodpecker CI coverage for Rust, frontend checks, and one Playwright smoke test.
+Numen is a local-first personal-finance app built around double-entry bookkeeping. This repository currently contains the Feature 0 foundation: a Rust workspace, a local HTTP API shell, a SvelteKit frontend scaffold, browser-local appearance support with `light`/`dark`/`system`, a PT-BR-first localization layer for frontend copy and formatting, and committed Woodpecker CI coverage for Rust, frontend checks, and one Playwright smoke test.
 
 ## Prerequisites
 
@@ -16,6 +16,7 @@ Numen is a local-first personal-finance app built around double-entry bookkeepin
 - `crates/numen-api`: local Rust HTTP API
 - `apps/web`: SvelteKit frontend
   - shared theme tokens plus a three-way appearance toggle stored locally in the browser
+  - default user-facing locale is `pt-BR`, with translation keys and locale-aware formatters in the frontend
 
 ## Commands
 

@@ -1,3 +1,5 @@
+import { ptBrCopy } from '$lib/locale';
+
 export const THEME_STORAGE_KEY = 'numen-theme-preference';
 export const PREFERS_DARK_THEME_QUERY = '(prefers-color-scheme: dark)';
 
@@ -11,18 +13,18 @@ export const THEME_OPTIONS: ReadonlyArray<{
 }> = [
 	{
 		value: 'light',
-		label: 'Light',
-		description: 'Keep the ledger bright and paper-toned.'
+		label: ptBrCopy.appearance.themeLabels.light,
+		description: ptBrCopy.appearance.themeDescriptions.light
 	},
 	{
 		value: 'dark',
-		label: 'Dark',
-		description: 'Shift the desk into a low-light reading room.'
+		label: ptBrCopy.appearance.themeLabels.dark,
+		description: ptBrCopy.appearance.themeDescriptions.dark
 	},
 	{
 		value: 'system',
-		label: 'System',
-		description: 'Follow the device preference automatically.'
+		label: ptBrCopy.appearance.themeLabels.system,
+		description: ptBrCopy.appearance.themeDescriptions.system
 	}
 ] as const;
 

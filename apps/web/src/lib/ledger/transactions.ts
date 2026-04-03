@@ -1,26 +1,33 @@
 import { z } from 'zod';
 
 import type { Account, AccountType, CreateTransactionInput } from '$lib/api';
+import { ptBrCopy } from '$lib/locale';
 
 import { CATEGORY_ACCOUNT_TYPES, FUNDING_ACCOUNT_TYPES } from './accounts';
 
-const guidableAmountPattern = /^\d+(\.\d{1,2})?$/;
-const zeroAmountPattern = /^0+(?:\.0{1,2})?$/;
+const guidableAmountPattern = /^\d+([.,]\d{1,2})?$/;
+const zeroAmountPattern = /^0+(?:[.,]0{1,2})?$/;
 const fundingAccountTypeSet = new Set<AccountType>(FUNDING_ACCOUNT_TYPES);
 const categoryAccountTypeSet = new Set<AccountType>(CATEGORY_ACCOUNT_TYPES);
 
 const baseGuidedTransactionSchema = z.object({
-	date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter a valid date.'),
-	title: z.string().trim().min(1, 'Title is required.'),
+	date: z
+		.string()
+		.trim()
+		.regex(/^\d{4}-\d{2}-\d{2}$/, ptBrCopy.transactionValidation.dateInvalid),
+	title: z.string().trim().min(1, ptBrCopy.transactionValidation.titleRequired),
 	payee: z.string().trim(),
-	fundingAccount: z.string().trim().min(1, 'Choose a funding account.'),
-	categoryAccount: z.string().trim().min(1, 'Choose a category account.'),
+	fundingAccount: z.string().trim().min(1, ptBrCopy.transactionValidation.fundingAccountRequired),
+	categoryAccount: z.string().trim().min(1, ptBrCopy.transactionValidation.categoryAccountRequired),
 	amount: z
 		.string()
 		.trim()
-		.min(1, 'Amount is required.')
-		.regex(guidableAmountPattern, 'Enter a positive amount with up to two decimals.')
-		.refine((value) => !zeroAmountPattern.test(value), 'Amount must be greater than zero.'),
+		.min(1, ptBrCopy.transactionValidation.amountRequired)
+		.regex(guidableAmountPattern, ptBrCopy.transactionValidation.amountInvalid)
+		.refine(
+			(value) => !zeroAmountPattern.test(value),
+			ptBrCopy.transactionValidation.amountPositive
+		),
 	tags: z.string().trim()
 });
 
@@ -45,7 +52,7 @@ export function createGuidedTransactionSchema(accounts: Account[]) {
 				context.addIssue({
 					code: 'custom',
 					path: ['fundingAccount'],
-					message: 'Choose a funding account from the account desk.'
+					message: ptBrCopy.transactionValidation.fundingAccountDesk
 				});
 			}
 
@@ -53,7 +60,7 @@ export function createGuidedTransactionSchema(accounts: Account[]) {
 				context.addIssue({
 					code: 'custom',
 					path: ['categoryAccount'],
-					message: 'Choose a category account from the account desk.'
+					message: ptBrCopy.transactionValidation.categoryAccountDesk
 				});
 			}
 		})
@@ -108,7 +115,8 @@ export function buildGuidedTransactionFieldErrors(
 }
 
 function normalizeAmount(value: string): string {
-	const [whole, fractional = ''] = value.split('.');
+	const normalizedValue = value.replace(',', '.');
+	const [whole, fractional = ''] = normalizedValue.split('.');
 
 	if (fractional.length === 0) {
 		return `${whole}.00`;

@@ -1,10 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import {
-	NumenApiError,
-	createNumenApiClient,
-	transactionsSchema
-} from './api';
+import { NumenApiError, createNumenApiClient, transactionsSchema } from './api';
 
 describe('createNumenApiClient', () => {
 	it('lists transactions using typed response parsing', async () => {
@@ -55,10 +51,13 @@ describe('createNumenApiClient', () => {
 				})
 			)
 			.mockResolvedValueOnce(
-				new Response(JSON.stringify({ error: 'posting references unknown account `Assets:Missing`' }), {
-					status: 422,
-					headers: { 'content-type': 'application/json' }
-				})
+				new Response(
+					JSON.stringify({ error: 'posting references unknown account `Assets:Missing`' }),
+					{
+						status: 422,
+						headers: { 'content-type': 'application/json' }
+					}
+				)
 			);
 		const client = createNumenApiClient({
 			baseUrl: 'http://127.0.0.1:3000',

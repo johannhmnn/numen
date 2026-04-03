@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-	buildRecentTransactionItems,
-	formatLedgerAmount
-} from './recent-transactions';
+import { buildRecentTransactionItems, formatLedgerAmount } from './recent-transactions';
 
 describe('buildRecentTransactionItems', () => {
 	it('maps persisted transactions into recent-ledger rows', () => {
@@ -24,11 +21,11 @@ describe('buildRecentTransactionItems', () => {
 		expect(items).toEqual([
 			{
 				key: '2026-04-02:Groceries:0',
-				date: '2026-04-02',
+				date: '02/04/2026',
 				title: 'Groceries',
 				payee: 'Mercado Central',
 				category: 'Expenses:Groceries',
-				amount: '+48.20'
+				amount: '+48,20'
 			}
 		]);
 	});
@@ -64,8 +61,8 @@ describe('buildRecentTransactionItems', () => {
 });
 
 describe('formatLedgerAmount', () => {
-	it('formats ledger amounts with an explicit sign and grouped thousands', () => {
-		expect(formatLedgerAmount('-3400')).toBe('-3,400.00');
-		expect(formatLedgerAmount('48.2')).toBe('+48.20');
+	it('formats ledger amounts with an explicit sign and PT-BR separators', () => {
+		expect(formatLedgerAmount('-3400')).toBe('-3.400,00');
+		expect(formatLedgerAmount('48.2')).toBe('+48,20');
 	});
 });

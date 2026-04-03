@@ -18,6 +18,7 @@
 		type GuidedTransactionForm
 	} from '$lib/ledger/transactions';
 	import { buildRecentTransactionItems } from '$lib/ledger/recent-transactions';
+	import { formatAccountType, formatSignedDecimalAmount, ptBrCopy } from '$lib/locale';
 
 	const api = createNumenApiClient();
 
@@ -47,9 +48,7 @@
 
 	let setup = $derived(buildAccountSetupSummary(accounts));
 	let setupNote = $derived(
-		setup.canRecordTransactions
-			? 'Use the account desk to add more ledgers as your structure evolves.'
-			: setup.detail
+		setup.canRecordTransactions ? ptBrCopy.workspace.accountFormHintReady : setup.detail
 	);
 	let recentTransactionItems = $derived(buildRecentTransactionItems(transactions));
 	let guidedTransactionSchema = $derived(createGuidedTransactionSchema(accounts));
@@ -79,7 +78,7 @@
 			accountsState = 'ready';
 		} catch (error) {
 			accountsState = 'error';
-			accountsError = getErrorMessage(error, 'Unable to load accounts right now.');
+			accountsError = getErrorMessage(error, ptBrCopy.workspace.unableToLoadAccounts);
 		}
 	}
 
@@ -94,7 +93,7 @@
 			transactionsState = 'ready';
 		} catch (error) {
 			transactionsState = 'error';
-			transactionsError = getErrorMessage(error, 'Unable to load recent transactions right now.');
+			transactionsError = getErrorMessage(error, ptBrCopy.workspace.unableToLoadTransactions);
 		}
 	}
 
@@ -104,7 +103,7 @@
 		const trimmedName = accountName.trim();
 
 		if (!trimmedName) {
-			createAccountError = 'Account name is required.';
+			createAccountError = ptBrCopy.workspace.accountNameRequired;
 			return;
 		}
 
@@ -121,7 +120,7 @@
 			syncTransactionAccountSelections(nextAccounts);
 			accountName = '';
 		} catch (error) {
-			createAccountError = getErrorMessage(error, 'Unable to create the account right now.');
+			createAccountError = getErrorMessage(error, ptBrCopy.workspace.unableToCreateAccount);
 		} finally {
 			createAccountState = 'idle';
 		}
@@ -138,7 +137,7 @@
 
 		if (!parsed.success) {
 			transactionFieldErrors = buildGuidedTransactionFieldErrors(parsed.error);
-			transactionError = 'Review the highlighted fields and try again.';
+			transactionError = ptBrCopy.workspace.transactionReviewError;
 			return;
 		}
 
@@ -147,10 +146,10 @@
 		try {
 			await api.createTransaction(parsed.data);
 			await loadTransactions(true);
-			transactionSuccess = 'Transaction recorded to the local ledger.';
+			transactionSuccess = ptBrCopy.workspace.transactionSuccess;
 			resetTransactionForm(parsed.data);
 		} catch (error) {
-			transactionError = getErrorMessage(error, 'Unable to record the transaction right now.');
+			transactionError = getErrorMessage(error, ptBrCopy.workspace.unableToCreateTransaction);
 		} finally {
 			transactionState = 'idle';
 		}
@@ -207,31 +206,30 @@
 <section class="workspace">
 	<header class="masthead">
 		<div>
-			<p class="brand-kicker">Numen ledger</p>
-			<h1>Structured entry for the transactions you actually remember.</h1>
+			<p class="brand-kicker">{ptBrCopy.workspace.brandKicker}</p>
+			<h1>{ptBrCopy.workspace.mastheadTitle}</h1>
 		</div>
-		<p class="masthead-note">
-			A warm, local-first desk for account setup, guided transaction capture, and recent ledger
-			movement.
-		</p>
+		<p class="masthead-note">{ptBrCopy.workspace.mastheadNote}</p>
 	</header>
 
 	<div class="layout">
 		<aside class="rail" aria-labelledby="account-desk-heading">
 			<div class="section-heading">
-				<p class="section-kicker">Account desk</p>
-				<h2 id="account-desk-heading">Choose the accounts that frame each entry.</h2>
+				<p class="section-kicker">{ptBrCopy.workspace.accountDeskKicker}</p>
+				<h2 id="account-desk-heading">{ptBrCopy.workspace.accountDeskHeading}</h2>
 			</div>
 
 			<section class="setup-status" aria-live="polite">
 				<h3>{setup.headline}</h3>
 				<p>{setup.detail}</p>
 				{#if accountsState === 'loading'}
-					<p class="status-chip">Loading your ledger accounts...</p>
+					<p class="status-chip">{ptBrCopy.workspace.loadingAccounts}</p>
 				{:else if accountsState === 'error'}
 					<div class="status-stack">
 						<p class="status-chip status-chip--error">{accountsError}</p>
-						<button class="ghost-button" type="button" onclick={loadAccounts}>Try again</button>
+						<button class="ghost-button" type="button" onclick={loadAccounts}>
+							{ptBrCopy.common.retry}
+						</button>
 					</div>
 				{/if}
 			</section>
@@ -244,36 +242,40 @@
 							{#each group.entries as entry (entry.name)}
 								<li>
 									<strong>{entry.name}</strong>
-									<span>{entry.type}</span>
+									<span>{formatAccountType(entry.type)}</span>
 								</li>
 							{/each}
 						{:else if accountsState === 'ready'}
 							<li class="empty-entry">
 								<strong>{group.emptyLabel}</strong>
-								<span>Add it below so the guided transaction flow can use it.</span>
+								<span>{ptBrCopy.workspace.accountFormHintReady}</span>
 							</li>
 						{/if}
 					</ul>
 				</section>
 			{/each}
 
-			<form class="account-form" aria-label="Add account" onsubmit={handleCreateAccount}>
+			<form
+				class="account-form"
+				aria-label={ptBrCopy.workspace.addAccountFormLabel}
+				onsubmit={handleCreateAccount}
+			>
 				<label for="account-name">
-					<span>Account name</span>
+					<span>{ptBrCopy.workspace.accountNameLabel}</span>
 					<input
 						id="account-name"
 						type="text"
 						bind:value={accountName}
-						placeholder="Expenses:Groceries"
+						placeholder={ptBrCopy.workspace.accountNamePlaceholder}
 						autocomplete="off"
 					/>
 				</label>
 
 				<label for="account-type">
-					<span>Account type</span>
+					<span>{ptBrCopy.workspace.accountTypeLabel}</span>
 					<select id="account-type" bind:value={accountType}>
 						{#each ACCOUNT_TYPE_OPTIONS as option (option)}
-							<option value={option}>{option}</option>
+							<option value={option}>{formatAccountType(option)}</option>
 						{/each}
 					</select>
 				</label>
@@ -281,7 +283,9 @@
 				<div class="form-footer form-footer--rail">
 					<p>{setupNote}</p>
 					<button type="submit" disabled={createAccountState === 'submitting'}>
-						{createAccountState === 'submitting' ? 'Adding…' : 'Add account'}
+						{createAccountState === 'submitting'
+							? ptBrCopy.workspace.addingAccount
+							: ptBrCopy.workspace.addAccount}
 					</button>
 				</div>
 
@@ -293,20 +297,18 @@
 
 		<main class="entry-stage" aria-labelledby="entry-stage-heading">
 			<div class="section-heading">
-				<p class="section-kicker">Structured entry</p>
-				<h2 id="entry-stage-heading">
-					Record one funding account, one category account, one clear amount.
-				</h2>
+				<p class="section-kicker">{ptBrCopy.workspace.structuredEntryKicker}</p>
+				<h2 id="entry-stage-heading">{ptBrCopy.workspace.structuredEntryHeading}</h2>
 			</div>
 
 			<form
 				class="entry-form"
-				aria-label="Guided transaction entry"
+				aria-label={ptBrCopy.workspace.transactionFormLabel}
 				onsubmit={handleCreateTransaction}
 			>
 				<div class="field-row split">
 					<label>
-						<span>Date</span>
+						<span>{ptBrCopy.workspace.dateLabel}</span>
 						<input
 							type="date"
 							bind:value={transactionForm.date}
@@ -314,11 +316,11 @@
 						/>
 					</label>
 					<label>
-						<span>Amount</span>
+						<span>{ptBrCopy.workspace.amountLabel}</span>
 						<input
 							type="text"
 							bind:value={transactionForm.amount}
-							placeholder="48.20"
+							placeholder={ptBrCopy.workspace.amountPlaceholder}
 							inputmode="decimal"
 							aria-invalid={Boolean(transactionFieldErrors.amount)}
 						/>
@@ -330,11 +332,11 @@
 				</div>
 
 				<label>
-					<span>Title</span>
+					<span>{ptBrCopy.workspace.titleLabel}</span>
 					<input
 						type="text"
 						bind:value={transactionForm.title}
-						placeholder="Groceries"
+						placeholder={ptBrCopy.workspace.titlePlaceholder}
 						autocomplete="off"
 						aria-invalid={Boolean(transactionFieldErrors.title)}
 					/>
@@ -344,24 +346,24 @@
 				</div>
 
 				<label>
-					<span>Payee</span>
+					<span>{ptBrCopy.workspace.payeeLabel}</span>
 					<input
 						type="text"
 						bind:value={transactionForm.payee}
-						placeholder="Mercado Central"
+						placeholder={ptBrCopy.workspace.payeePlaceholder}
 						autocomplete="off"
 					/>
 				</label>
 
 				<div class="field-row split">
 					<label>
-						<span>Funding account</span>
+						<span>{ptBrCopy.workspace.fundingAccountLabel}</span>
 						<select
 							bind:value={transactionForm.fundingAccount}
 							aria-invalid={Boolean(transactionFieldErrors.fundingAccount)}
 						>
 							<option value="" disabled={setup.fundingAccounts.length > 0}
-								>Select a funding account</option
+								>{ptBrCopy.workspace.fundingAccountPlaceholder}</option
 							>
 							{#each setup.fundingAccounts as account (account.name)}
 								<option value={account.name}>{account.name}</option>
@@ -369,13 +371,13 @@
 						</select>
 					</label>
 					<label>
-						<span>Category account</span>
+						<span>{ptBrCopy.workspace.categoryAccountLabel}</span>
 						<select
 							bind:value={transactionForm.categoryAccount}
 							aria-invalid={Boolean(transactionFieldErrors.categoryAccount)}
 						>
 							<option value="" disabled={setup.categoryAccounts.length > 0}
-								>Select a category account</option
+								>{ptBrCopy.workspace.categoryAccountPlaceholder}</option
 							>
 							{#each setup.categoryAccounts as account (account.name)}
 								<option value={account.name}>{account.name}</option>
@@ -389,20 +391,20 @@
 				</div>
 
 				<label>
-					<span>Tags</span>
+					<span>{ptBrCopy.workspace.tagsLabel}</span>
 					<input
 						type="text"
 						bind:value={transactionForm.tags}
-						placeholder="food, weekly, home"
+						placeholder={ptBrCopy.workspace.tagsPlaceholder}
 						autocomplete="off"
 					/>
 				</label>
 
-				<section class="posting-preview" aria-label="Posting preview">
+				<section class="posting-preview" aria-label={ptBrCopy.workspace.postingPreviewLabel}>
 					<div class="preview-heading">
-						<span>Ledger effect</span>
+						<span>{ptBrCopy.workspace.ledgerEffectLabel}</span>
 						<p>
-							{transactionForm.categoryAccount || 'Choose accounts to preview the two postings.'}
+							{transactionForm.categoryAccount || ptBrCopy.workspace.postingPreviewHint}
 						</p>
 					</div>
 
@@ -411,26 +413,24 @@
 							{#each postingPreview as posting (posting.account)}
 								<li>
 									<strong>{posting.account}</strong>
-									<span>{posting.amount}</span>
+									<span>{formatSignedDecimalAmount(posting.amount)}</span>
 								</li>
 							{/each}
 						</ul>
 					{:else}
-						<p class="preview-empty">
-							Enter the amount, funding account, and category account to see the balanced pair.
-						</p>
+						<p class="preview-empty">{ptBrCopy.workspace.postingPreviewEmpty}</p>
 					{/if}
 				</section>
 
-				<div class="field-group" role="group" aria-label="Tags preview">
-					<span>Tag preview</span>
+				<div class="field-group" role="group" aria-label={ptBrCopy.workspace.tagPreviewLabel}>
+					<span>{ptBrCopy.workspace.tagPreviewLabel}</span>
 					<div class:tags--empty={tagPreview.length === 0} class="tags">
 						{#if tagPreview.length > 0}
 							{#each tagPreview as tag (tag)}
 								<span>{tag}</span>
 							{/each}
 						{:else}
-							<span>No tags yet</span>
+							<span>{ptBrCopy.workspace.tagPreviewEmpty}</span>
 						{/if}
 					</div>
 				</div>
@@ -444,16 +444,18 @@
 				<div class="form-footer">
 					<p>
 						{#if setup.canRecordTransactions}
-							One amount in. Two balanced postings out. The form derives the ledger shape for you.
+							{ptBrCopy.workspace.transactionFooterReady}
 						{:else}
-							Add one funding account and one category account before transaction entry unlocks.
+							{ptBrCopy.workspace.transactionFooterLocked}
 						{/if}
 					</p>
 					<button
 						type="submit"
 						disabled={!setup.canRecordTransactions || transactionState === 'submitting'}
 					>
-						{transactionState === 'submitting' ? 'Recording…' : 'Record transaction'}
+						{transactionState === 'submitting'
+							? ptBrCopy.workspace.recordingTransaction
+							: ptBrCopy.workspace.recordTransaction}
 					</button>
 				</div>
 			</form>
@@ -461,24 +463,22 @@
 
 		<section class="recent-panel" aria-labelledby="recent-transactions-heading">
 			<div class="section-heading">
-				<p class="section-kicker">Recent ledger</p>
-				<h2 id="recent-transactions-heading">
-					Newest transactions stay visible the moment they land.
-				</h2>
+				<p class="section-kicker">{ptBrCopy.workspace.recentLedgerKicker}</p>
+				<h2 id="recent-transactions-heading">{ptBrCopy.workspace.recentLedgerHeading}</h2>
 			</div>
 
 			{#if transactionsState === 'loading'}
-				<p class="status-chip">Loading recent transactions...</p>
+				<p class="status-chip">{ptBrCopy.workspace.loadingTransactions}</p>
 			{:else if transactionsState === 'error'}
 				<div class="status-stack">
 					<p class="status-chip status-chip--error">{transactionsError}</p>
 					<button class="ghost-button" type="button" onclick={() => loadTransactions()}>
-						Try again
+						{ptBrCopy.common.retry}
 					</button>
 				</div>
 			{:else if recentTransactionItems.length === 0}
 				<div class="recent-empty">
-					<p>Record a transaction and it will appear here as your latest ledger move.</p>
+					<p>{ptBrCopy.workspace.recentEmpty}</p>
 				</div>
 			{:else}
 				<ol class="transaction-list">

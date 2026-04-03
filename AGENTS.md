@@ -38,9 +38,11 @@ The repository is still at Feature 0 foundation. The current codebase is a scaff
 - Balances are derived from postings, never entered directly
 - Transaction entry is structured, not natural-language based
 - Single currency only in v1
+- Product-facing UI language defaults to `pt-BR` in v1
 - Balance reconciliation uses dated snapshots plus explicit adjustment transactions against `Equity:HistoricalAdjustment`
 - Flat accounts in v1. Do not add account hierarchy yet.
 - The common transaction-entry path should stay optimized for one funding account, one payee, one primary category, and one amount, while still allowing balanced multi-posting transactions in the model.
+- Use Brazilian Portuguese date, decimal, and currency presentation in the frontend while keeping domain and persistence concepts locale-neutral.
 - V1 reporting:
   - transactions by category
   - expense pie chart by category
@@ -100,6 +102,7 @@ Browser-backed frontend tests may fail in restricted sandboxes even when the pro
 - Favor readable APIs over clever abstractions
 - Keep `numen-core` dependency-light and pure. Do not pull web, database, or UI concerns into it.
 - Keep `numen-api` thin. It should orchestrate HTTP, persistence, and static asset serving around the core domain rather than reimplement domain rules.
+- Keep localization at the frontend boundary by default. Prefer translation keys and locale-aware formatters for user-facing copy rather than hard-coded strings.
 - Keep the frontend honest about backend state. Do not fake completed product capabilities in the UI.
 - Match the existing SvelteKit setup:
   - use runes mode
@@ -154,12 +157,13 @@ Current execution order:
 3. Ledger storage and balance queries
 4. Structured transaction entry
 5. Theme system and appearance controls
-6. Balance snapshots and historical adjustment
-7. CSV import
-8. Category reporting
-9. Expense trends
-10. Account-focused spending analysis
-11. Hardening and first release candidate
+6. PT-BR localization foundation
+7. Balance snapshots and historical adjustment
+8. CSV import
+9. Category reporting
+10. Expense trends
+11. Account-focused spending analysis
+12. Hardening and first release candidate
 
 Deferred after v1:
 

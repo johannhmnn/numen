@@ -5,6 +5,7 @@
 
 	import favicon from '$lib/assets/favicon.svg';
 	import AppearanceDock from '$lib/components/AppearanceDock.svelte';
+	import { ptBrCopy } from '$lib/locale';
 
 	let { children } = $props();
 </script>
@@ -16,9 +17,9 @@
 
 <div class="app-shell">
 	<header class="app-chrome">
-		<a class="brand-mark" href={resolve('/')} aria-label="Numen home">
+		<a class="brand-mark" href={resolve('/')} aria-label={ptBrCopy.layout.homeAriaLabel}>
 			<span>Numen</span>
-			<strong>Local ledger</strong>
+			<strong>{ptBrCopy.layout.localLedger}</strong>
 		</a>
 
 		<AppearanceDock />

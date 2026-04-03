@@ -6,6 +6,8 @@ Numen is a single-user personal-finance application built around double-entry bo
 
 The frontend also carries a shared appearance system with `light`, `dark`, and `system` modes so each product slice can reuse one cohesive visual foundation instead of restyling screens independently.
 
+The frontend defaults to Brazilian Portuguese (`pt-BR`) for product-facing UI copy and presentation so the app stays comfortable for day-to-day use while the bookkeeping core remains language-neutral.
+
 ## Product Decisions
 
 - Use classic account types: `Assets`, `Liabilities`, `Equity`, `Income`, `Expenses`.
@@ -18,7 +20,10 @@ The frontend also carries a shared appearance system with `light`, `dark`, and `
 - Keep the ledger capable of handling two or more postings per transaction.
 - Use structured transaction entry, not natural-language parsing.
 - Use a single ledger currency in v1.
+- Use `pt-BR` as the default product-facing UI locale in v1.
 - Support dated balance snapshots per account and create explicit balancing transactions against `Equity:HistoricalAdjustment` when imported history does not reconcile to the known balance.
+- Use Brazilian Portuguese date, decimal, and currency presentation in the frontend.
+- Keep domain rules, persistence, and backend/core bookkeeping concepts locale-neutral.
 - Reporting for v1 includes:
   - transactions filtered by category
   - expense pie chart by category
@@ -49,6 +54,7 @@ The frontend also carries a shared appearance system with `light`, `dark`, and `
 - `apps/web`
   - SvelteKit SPA for data entry, import, balances, and charts
   - shared theme tokens and appearance controls for `light`, `dark`, and `system`
+  - localization layer with translation keys, PT-BR copy, and locale-aware formatters
 
 ## Selected Libraries
 
@@ -94,6 +100,8 @@ The frontend also carries a shared appearance system with `light`, `dark`, and `
 - `ResolvedTheme`
   - `light`
   - `dark`
+- `AppLocale`
+  - `pt-BR`
 
 ## Reconciliation Flow
 
@@ -109,6 +117,7 @@ The frontend also carries a shared appearance system with `light`, `dark`, and `
 - Frontend tests with `Vitest` and `@testing-library/svelte`
 - Browser acceptance tests with `Playwright`
 - Theme coverage verifies default `system`, saved preference override, and live OS-theme following
+- Localization coverage verifies PT-BR copy and PT-BR date/amount formatting in the current shell
 - Woodpecker CI workflows under `.woodpecker/`
 - Local verification uses `just`; Woodpecker runs the equivalent commands directly in each workflow
 - CI checks:
@@ -126,3 +135,4 @@ The frontend also carries a shared appearance system with `light`, `dark`, and `
 - Offline/local-first behavior is more important than sync
 - Multi-currency and FX are out of scope for the first slice
 - Desktop packaging is deferred, but the stack should keep a clean Tauri path later
+- English contributor docs can remain primary until a separate docs-localization decision is made

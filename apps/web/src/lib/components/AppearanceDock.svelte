@@ -16,6 +16,7 @@
 		type ThemePreference,
 		writeStoredThemePreference
 	} from '$lib/theme';
+	import { ptBrCopy } from '$lib/locale';
 
 	const root = browser ? document.documentElement : null;
 
@@ -25,10 +26,10 @@
 
 	let statusCopy = $derived.by(() => {
 		if (themePreference === 'system') {
-			return `System is active · ${capitalize(resolvedTheme)} now`;
+			return ptBrCopy.appearance.statusSystemActive(resolvedTheme);
 		}
 
-		return `${capitalize(themePreference)} is pinned`;
+		return ptBrCopy.appearance.statusPinned(themePreference);
 	});
 
 	onMount(() => {
@@ -61,19 +62,15 @@
 		resolvedTheme = resolveTheme(themePreference, systemTheme);
 		applyTheme(document.documentElement, themePreference, resolvedTheme);
 	}
-
-	function capitalize(value: string) {
-		return `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
-	}
 </script>
 
-<section class="appearance-dock" aria-label="Appearance controls">
+<section class="appearance-dock" aria-label={ptBrCopy.appearance.sectionLabel}>
 	<div class="appearance-copy">
-		<p class="appearance-kicker">Appearance</p>
+		<p class="appearance-kicker">{ptBrCopy.appearance.kicker}</p>
 		<p class="appearance-status">{statusCopy}</p>
 	</div>
 
-	<div class="appearance-toggle" role="radiogroup" aria-label="Color theme">
+	<div class="appearance-toggle" role="radiogroup" aria-label={ptBrCopy.appearance.radioGroupLabel}>
 		{#each THEME_OPTIONS as option (option.value)}
 			<label class:selected={themePreference === option.value} title={option.description}>
 				<input

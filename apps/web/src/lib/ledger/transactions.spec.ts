@@ -77,12 +77,12 @@ describe('createGuidedTransactionSchema', () => {
 		}
 
 		expect(buildGuidedTransactionFieldErrors(result.error)).toEqual({
-			date: 'Enter a valid date.',
-			title: 'Title is required.',
+			date: 'Informe uma data valida.',
+			title: 'O titulo e obrigatorio.',
 			payee: undefined,
-			fundingAccount: 'Choose a funding account.',
-			categoryAccount: 'Choose a category account.',
-			amount: 'Amount must be greater than zero.',
+			fundingAccount: 'Escolha uma conta de origem.',
+			categoryAccount: 'Escolha uma conta de categoria.',
+			amount: 'O valor precisa ser maior que zero.',
 			tags: undefined
 		});
 	});
@@ -109,7 +109,29 @@ describe('createGuidedTransactionSchema', () => {
 		}
 
 		expect(buildGuidedTransactionFieldErrors(result.error).fundingAccount).toBe(
-			'Choose a funding account from the account desk.'
+			'Escolha uma conta de origem do painel de contas.'
 		);
+	});
+
+	it('accepts PT-BR decimal input with comma and normalizes it for the API payload', () => {
+		const schema = createGuidedTransactionSchema([
+			{ name: 'Assets:Checking', type: 'Assets' },
+			{ name: 'Expenses:Groceries', type: 'Expenses' }
+		]);
+
+		const result = schema.parse({
+			date: '2026-04-02',
+			title: 'Mercado',
+			payee: 'Mercado Central',
+			fundingAccount: 'Assets:Checking',
+			categoryAccount: 'Expenses:Groceries',
+			amount: '48,2',
+			tags: 'alimentacao'
+		});
+
+		expect(result.postings).toEqual([
+			{ account: 'Assets:Checking', amount: '-48.20' },
+			{ account: 'Expenses:Groceries', amount: '48.20' }
+		]);
 	});
 });

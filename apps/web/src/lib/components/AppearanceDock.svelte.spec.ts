@@ -89,7 +89,7 @@ describe('AppearanceDock', () => {
 
 		expect(document.documentElement.dataset.theme).toBe('dark');
 		expect(document.documentElement.style.colorScheme).toBe('dark');
-		expect((screen.getByRole('radio', { name: 'System' }) as HTMLInputElement).checked).toBe(true);
+		expect((screen.getByRole('radio', { name: 'Sistema' }) as HTMLInputElement).checked).toBe(true);
 	});
 
 	it('uses a saved preference instead of the OS preference', async () => {
@@ -105,8 +105,8 @@ describe('AppearanceDock', () => {
 		});
 
 		expect(document.documentElement.dataset.theme).toBe('light');
-		expect((screen.getByRole('radio', { name: 'Light' }) as HTMLInputElement).checked).toBe(true);
-		expect(screen.getByText('Light is pinned')).toBeTruthy();
+		expect((screen.getByRole('radio', { name: 'Claro' }) as HTMLInputElement).checked).toBe(true);
+		expect(screen.getByText('Claro fixo')).toBeTruthy();
 	});
 
 	it('tracks system theme changes while system mode is selected', async () => {
@@ -125,8 +125,8 @@ describe('AppearanceDock', () => {
 			expect(document.documentElement.dataset.theme).toBe('dark');
 		});
 
-		expect((screen.getByRole('radio', { name: 'System' }) as HTMLInputElement).checked).toBe(true);
-		expect(screen.getByText('System is active · Dark now')).toBeTruthy();
+		expect((screen.getByRole('radio', { name: 'Sistema' }) as HTMLInputElement).checked).toBe(true);
+		expect(screen.getByText('Sistema ativo - Escuro agora')).toBeTruthy();
 	});
 
 	it('exposes an accessible three-way toggle and persists explicit selections', async () => {
@@ -135,13 +135,13 @@ describe('AppearanceDock', () => {
 
 		render(AppearanceDock);
 
-		const radioGroup = screen.getByRole('radiogroup', { name: 'Color theme' });
+		const radioGroup = screen.getByRole('radiogroup', { name: 'Tema de cores' });
 
-		expect(within(radioGroup).getByRole('radio', { name: 'Light' })).toBeTruthy();
-		expect(within(radioGroup).getByRole('radio', { name: 'Dark' })).toBeTruthy();
-		expect(within(radioGroup).getByRole('radio', { name: 'System' })).toBeTruthy();
+		expect(within(radioGroup).getByRole('radio', { name: 'Claro' })).toBeTruthy();
+		expect(within(radioGroup).getByRole('radio', { name: 'Escuro' })).toBeTruthy();
+		expect(within(radioGroup).getByRole('radio', { name: 'Sistema' })).toBeTruthy();
 
-		await fireEvent.click(within(radioGroup).getByRole('radio', { name: 'Dark' }));
+		await fireEvent.click(within(radioGroup).getByRole('radio', { name: 'Escuro' }));
 
 		await waitFor(() => {
 			expect(document.documentElement.dataset.themePreference).toBe('dark');
@@ -150,10 +150,10 @@ describe('AppearanceDock', () => {
 		expect(document.documentElement.dataset.theme).toBe('dark');
 		expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
 		expect(
-			(within(radioGroup).getByRole('radio', { name: 'Dark' }) as HTMLInputElement).checked
+			(within(radioGroup).getByRole('radio', { name: 'Escuro' }) as HTMLInputElement).checked
 		).toBe(true);
 
-		await fireEvent.click(within(radioGroup).getByRole('radio', { name: 'System' }));
+		await fireEvent.click(within(radioGroup).getByRole('radio', { name: 'Sistema' }));
 
 		await waitFor(() => {
 			expect(document.documentElement.dataset.themePreference).toBe('system');
@@ -162,7 +162,7 @@ describe('AppearanceDock', () => {
 		expect(document.documentElement.dataset.theme).toBe('light');
 		expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('system');
 		expect(
-			(within(radioGroup).getByRole('radio', { name: 'System' }) as HTMLInputElement).checked
+			(within(radioGroup).getByRole('radio', { name: 'Sistema' }) as HTMLInputElement).checked
 		).toBe(true);
 	});
 });

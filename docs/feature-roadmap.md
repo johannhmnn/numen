@@ -83,6 +83,23 @@ Tests:
 - toggle exposes correct accessible selected state for all three options
 - browser flow covers initial render in light and dark system modes plus override switching
 
+## Feature 3B: PT-BR Localization Foundation
+
+Goal: make the product comfortable to use in Brazilian Portuguese before later frontend slices expand the UI surface area.
+
+- Centralize user-facing copy behind translation keys instead of inline strings
+- Add an app locale module with `pt-BR` as the default locale
+- Localize the current shell copy, form labels, empty states, status text, and validation messaging
+- Standardize PT-BR formatting for dates, decimal amounts, and currency display in the frontend
+- Keep `numen-core` and current API/domain rules locale-neutral
+
+Tests:
+
+- current shell components render PT-BR labels, helper text, and status messages
+- PT-BR formatters render dates and monetary values correctly
+- transaction-entry validation messages stay localized
+- browser flow passes against PT-BR UI copy
+
 ## Feature 4: Balance Snapshots And Historical Adjustment
 
 Goal: reconcile incomplete transaction history with a known real-world balance.
@@ -167,6 +184,7 @@ Goal: prepare the first stable local-first release.
 - Tighten test fixtures and regression coverage
 - Validate import/reconciliation/reporting behavior on realistic datasets
 - Document local setup, workflows, and release steps
+- Sweep remaining user-facing copy to ensure later slices keep using the localization layer
 
 Tests:
 

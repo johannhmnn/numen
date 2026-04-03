@@ -25,22 +25,26 @@ describe('LedgerWorkspace', () => {
 
 		render(LedgerWorkspace);
 
-		expect(screen.getByText('Loading your ledger accounts...')).toBeTruthy();
+		expect(screen.getByText('Carregando as contas do seu razao...')).toBeTruthy();
 
 		await waitFor(() => {
 			expect(
-				screen.getByText('Create at least one category account to unlock structured entry.')
+				screen.getByText('Crie pelo menos uma conta de categoria para liberar o lancamento guiado.')
 			).toBeTruthy();
 		});
 
-		const fundingSection = screen.getByLabelText('Funding accounts');
-		const categorySection = screen.getByLabelText('Category accounts');
+		const fundingSection = screen.getByLabelText('Contas de origem');
+		const categorySection = screen.getByLabelText('Contas de categoria');
 
 		expect(within(fundingSection).getByText('Assets:Checking')).toBeTruthy();
 		expect(
-			within(categorySection).getByText('No category accounts yet. Add one below to continue.')
+			within(categorySection).getByText(
+				'Nenhuma conta de categoria ainda. Adicione uma abaixo para continuar.'
+			)
 		).toBeTruthy();
-		expect((screen.getByRole('button', { name: 'Record transaction' }) as HTMLButtonElement).disabled).toBe(true);
+		expect(
+			(screen.getByRole('button', { name: 'Registrar transacao' }) as HTMLButtonElement).disabled
+		).toBe(true);
 	});
 
 	it('creates an account inline and updates the account desk', async () => {
@@ -54,22 +58,24 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText('Add one funding account and one category account to unlock structured entry.')
+				screen.getByText(
+					'Adicione uma conta de origem e uma conta de categoria para liberar o lancamento guiado.'
+				)
 			).toBeTruthy();
 		});
 
-		const accountForm = screen.getByRole('form', { name: 'Add account' });
+		const accountForm = screen.getByRole('form', { name: 'Adicionar conta' });
 
-		await fireEvent.input(within(accountForm).getByLabelText('Account name'), {
+		await fireEvent.input(within(accountForm).getByLabelText('Nome da conta'), {
 			target: { value: 'Expenses:Groceries' }
 		});
-		await fireEvent.change(within(accountForm).getByLabelText('Account type'), {
+		await fireEvent.change(within(accountForm).getByLabelText('Tipo de conta'), {
 			target: { value: 'Expenses' }
 		});
 		await fireEvent.submit(accountForm);
 
 		await waitFor(() => {
-			const categorySection = screen.getByLabelText('Category accounts');
+			const categorySection = screen.getByLabelText('Contas de categoria');
 			expect(within(categorySection).getByText('Expenses:Groceries')).toBeTruthy();
 		});
 
@@ -96,25 +102,23 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText('Funding and category accounts are ready for guided entry.')
+				screen.getByText('As contas de origem e categoria estao prontas para o lancamento guiado.')
 			).toBeTruthy();
 		});
 
-		const transactionForm = screen.getByRole('form', { name: 'Guided transaction entry' });
-		const fundingSelect = within(transactionForm).getByLabelText('Funding account');
-		const categorySelect = within(transactionForm).getByLabelText('Category account');
+		const transactionForm = screen.getByRole('form', {
+			name: 'Lancamento guiado de transacao'
+		});
+		const fundingSelect = within(transactionForm).getByLabelText('Conta de origem');
+		const categorySelect = within(transactionForm).getByLabelText('Conta de categoria');
 
 		expect(within(fundingSelect).getByRole('option', { name: 'Assets:Checking' })).toBeTruthy();
 		expect(
 			within(fundingSelect).getByRole('option', { name: 'Liabilities:CreditCard' })
 		).toBeTruthy();
-		expect(
-			within(fundingSelect).queryByRole('option', { name: 'Equity:Opening' })
-		).toBeNull();
+		expect(within(fundingSelect).queryByRole('option', { name: 'Equity:Opening' })).toBeNull();
 
-		expect(
-			within(categorySelect).getByRole('option', { name: 'Expenses:Groceries' })
-		).toBeTruthy();
+		expect(within(categorySelect).getByRole('option', { name: 'Expenses:Groceries' })).toBeTruthy();
 		expect(within(categorySelect).getByRole('option', { name: 'Income:Salary' })).toBeTruthy();
 		expect(
 			within(categorySelect).queryByRole('option', { name: 'Liabilities:CreditCard' })
@@ -135,39 +139,41 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText('Funding and category accounts are ready for guided entry.')
+				screen.getByText('As contas de origem e categoria estao prontas para o lancamento guiado.')
 			).toBeTruthy();
 		});
 
-		const transactionForm = screen.getByRole('form', { name: 'Guided transaction entry' });
+		const transactionForm = screen.getByRole('form', {
+			name: 'Lancamento guiado de transacao'
+		});
 
 		await fireEvent.submit(transactionForm);
 
 		await waitFor(() => {
-			expect(within(transactionForm).getByText('Title is required.')).toBeTruthy();
+			expect(within(transactionForm).getByText('O titulo e obrigatorio.')).toBeTruthy();
 		});
 
-		expect(within(transactionForm).getByText('Amount is required.')).toBeTruthy();
+		expect(within(transactionForm).getByText('O valor e obrigatorio.')).toBeTruthy();
 
-		await fireEvent.input(within(transactionForm).getByLabelText('Title'), {
+		await fireEvent.input(within(transactionForm).getByLabelText('Titulo'), {
 			target: { value: 'Groceries' }
 		});
-		await fireEvent.input(within(transactionForm).getByLabelText('Date'), {
+		await fireEvent.input(within(transactionForm).getByLabelText('Data'), {
 			target: { value: '2026-04-02' }
 		});
-		await fireEvent.input(within(transactionForm).getByLabelText('Payee'), {
+		await fireEvent.input(within(transactionForm).getByLabelText('Favorecido'), {
 			target: { value: 'Mercado Central' }
 		});
-		await fireEvent.input(within(transactionForm).getByLabelText('Amount'), {
-			target: { value: '48.2' }
+		await fireEvent.input(within(transactionForm).getByLabelText('Valor'), {
+			target: { value: '48,2' }
 		});
 		await fireEvent.input(within(transactionForm).getByLabelText('Tags'), {
-			target: { value: 'food, weekly' }
+			target: { value: 'alimentacao, semanal' }
 		});
 		await fireEvent.submit(transactionForm);
 
 		await waitFor(() => {
-			expect(screen.getByText('Transaction recorded to the local ledger.')).toBeTruthy();
+			expect(screen.getByText('Transacao registrada no razao local.')).toBeTruthy();
 		});
 
 		expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:3000/transactions', {
@@ -186,7 +192,7 @@ describe('LedgerWorkspace', () => {
 			title: 'Groceries',
 			payee: 'Mercado Central',
 			primary_category: 'Expenses:Groceries',
-			tags: ['food', 'weekly'],
+			tags: ['alimentacao', 'semanal'],
 			postings: [
 				{ account: 'Assets:Checking', amount: '-48.20' },
 				{ account: 'Expenses:Groceries', amount: '48.20' }
@@ -222,16 +228,18 @@ describe('LedgerWorkspace', () => {
 			expect(screen.getByText('Coffee')).toBeTruthy();
 		});
 
-		const transactionForm = screen.getByRole('form', { name: 'Guided transaction entry' });
+		const transactionForm = screen.getByRole('form', {
+			name: 'Lancamento guiado de transacao'
+		});
 
-		await fireEvent.input(within(transactionForm).getByLabelText('Date'), {
+		await fireEvent.input(within(transactionForm).getByLabelText('Data'), {
 			target: { value: '2026-04-03' }
 		});
-		await fireEvent.input(within(transactionForm).getByLabelText('Title'), {
+		await fireEvent.input(within(transactionForm).getByLabelText('Titulo'), {
 			target: { value: 'Groceries' }
 		});
-		await fireEvent.input(within(transactionForm).getByLabelText('Amount'), {
-			target: { value: '48.20' }
+		await fireEvent.input(within(transactionForm).getByLabelText('Valor'), {
+			target: { value: '48,20' }
 		});
 		await fireEvent.submit(transactionForm);
 
@@ -240,7 +248,7 @@ describe('LedgerWorkspace', () => {
 		});
 
 		const recentPanelHeading = screen.getByRole('heading', {
-			name: 'Newest transactions stay visible the moment they land.'
+			name: 'As transacoes mais novas aparecem assim que entram.'
 		});
 		const recentPanel = recentPanelHeading.closest('section');
 
@@ -250,7 +258,9 @@ describe('LedgerWorkspace', () => {
 			.getAllByRole('listitem')
 			.map((entry) => within(entry).getByRole('strong', { hidden: true }));
 		expect(transactionTitles).toHaveLength(2);
-		expect(within(transactionTitles[0] as unknown as HTMLElement).queryByText('Groceries')).toBeTruthy();
+		expect(
+			within(transactionTitles[0] as unknown as HTMLElement).queryByText('Groceries')
+		).toBeTruthy();
 	});
 });
 

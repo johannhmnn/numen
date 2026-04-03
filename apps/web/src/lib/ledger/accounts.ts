@@ -1,4 +1,5 @@
 import type { Account, AccountType } from '$lib/api';
+import { APP_LOCALE, ptBrCopy } from '$lib/locale';
 
 export const FUNDING_ACCOUNT_TYPES = ['Assets', 'Liabilities'] as const satisfies AccountType[];
 export const CATEGORY_ACCOUNT_TYPES = ['Expenses', 'Income'] as const satisfies AccountType[];
@@ -29,19 +30,21 @@ export interface AccountSetupSummary {
 }
 
 export function buildAccountSetupSummary(accounts: Account[]): AccountSetupSummary {
-	const fundingAccounts = sortAccounts(accounts.filter((account) => isFundingAccount(account.type)));
+	const fundingAccounts = sortAccounts(
+		accounts.filter((account) => isFundingAccount(account.type))
+	);
 	const categoryAccounts = sortAccounts(
 		accounts.filter((account) => isCategoryAccount(account.type))
 	);
 	const accountGroups: AccountGroup[] = [
 		{
-			label: 'Funding accounts',
-			emptyLabel: 'No funding accounts yet. Add one below to continue.',
+			label: ptBrCopy.accountSetup.groups.fundingLabel,
+			emptyLabel: ptBrCopy.accountSetup.groups.fundingEmptyLabel,
 			entries: fundingAccounts
 		},
 		{
-			label: 'Category accounts',
-			emptyLabel: 'No category accounts yet. Add one below to continue.',
+			label: ptBrCopy.accountSetup.groups.categoryLabel,
+			emptyLabel: ptBrCopy.accountSetup.groups.categoryEmptyLabel,
 			entries: categoryAccounts
 		}
 	];
@@ -52,8 +55,8 @@ export function buildAccountSetupSummary(accounts: Account[]): AccountSetupSumma
 			categoryAccounts,
 			accountGroups,
 			canRecordTransactions: false,
-			headline: 'Add one funding account and one category account to unlock structured entry.',
-			detail: 'The guided flow needs one account to move money from and one account to classify it.'
+			headline: ptBrCopy.accountSetup.states.missingBoth.headline,
+			detail: ptBrCopy.accountSetup.states.missingBoth.detail
 		};
 	}
 
@@ -63,8 +66,8 @@ export function buildAccountSetupSummary(accounts: Account[]): AccountSetupSumma
 			categoryAccounts,
 			accountGroups,
 			canRecordTransactions: false,
-			headline: 'Create at least one funding account to unlock structured entry.',
-			detail: 'Funding accounts are the Assets or Liabilities you spend from or get paid into.'
+			headline: ptBrCopy.accountSetup.states.missingFunding.headline,
+			detail: ptBrCopy.accountSetup.states.missingFunding.detail
 		};
 	}
 
@@ -74,8 +77,8 @@ export function buildAccountSetupSummary(accounts: Account[]): AccountSetupSumma
 			categoryAccounts,
 			accountGroups,
 			canRecordTransactions: false,
-			headline: 'Create at least one category account to unlock structured entry.',
-			detail: 'Category accounts are your Expenses and Income anchors for each transaction.'
+			headline: ptBrCopy.accountSetup.states.missingCategory.headline,
+			detail: ptBrCopy.accountSetup.states.missingCategory.detail
 		};
 	}
 
@@ -84,13 +87,13 @@ export function buildAccountSetupSummary(accounts: Account[]): AccountSetupSumma
 		categoryAccounts,
 		accountGroups,
 		canRecordTransactions: true,
-		headline: 'Funding and category accounts are ready for guided entry.',
-		detail: 'You can now pick a source account and a category account for every new transaction.'
+		headline: ptBrCopy.accountSetup.states.ready.headline,
+		detail: ptBrCopy.accountSetup.states.ready.detail
 	};
 }
 
 function sortAccounts(accounts: Account[]): Account[] {
-	return [...accounts].sort((left, right) => left.name.localeCompare(right.name));
+	return [...accounts].sort((left, right) => left.name.localeCompare(right.name, APP_LOCALE));
 }
 
 function isFundingAccount(type: AccountType): boolean {

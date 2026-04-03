@@ -1,4 +1,5 @@
 import type { Transaction } from '$lib/api';
+import { formatDateDisplay, formatSignedDecimalAmount, ptBrCopy } from '$lib/locale';
 
 export interface RecentTransactionItem {
 	key: string;
@@ -9,11 +10,12 @@ export interface RecentTransactionItem {
 	amount: string;
 }
 
-export function buildRecentTransactionItems(
-	transactions: Transaction[]
-): RecentTransactionItem[] {
+export function buildRecentTransactionItems(transactions: Transaction[]): RecentTransactionItem[] {
 	return transactions.map((transaction, index) => {
-		const category = transaction.primary_category ?? transaction.postings[1]?.account ?? 'Uncategorized';
+		const category =
+			transaction.primary_category ??
+			transaction.postings[1]?.account ??
+			ptBrCopy.recentTransactions.uncategorized;
 		const amount =
 			transaction.postings.find((posting) => posting.account === category)?.amount ??
 			transaction.postings[1]?.amount ??
@@ -22,9 +24,9 @@ export function buildRecentTransactionItems(
 
 		return {
 			key: `${transaction.date}:${transaction.title}:${index}`,
-			date: transaction.date,
+			date: formatDateDisplay(transaction.date),
 			title: transaction.title,
-			payee: transaction.payee ?? 'Payee omitted',
+			payee: transaction.payee ?? ptBrCopy.recentTransactions.payeeOmitted,
 			category,
 			amount: formatLedgerAmount(amount)
 		};
@@ -32,12 +34,5 @@ export function buildRecentTransactionItems(
 }
 
 export function formatLedgerAmount(rawAmount: string): string {
-	const negative = rawAmount.startsWith('-');
-	const absolute = negative ? rawAmount.slice(1) : rawAmount;
-	const [wholePart, fractionalPart = '00'] = absolute.split('.');
-	const normalizedWhole = wholePart.replace(/^0+(?=\d)/, '') || '0';
-	const groupedWhole = normalizedWhole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-	const normalizedFraction = `${fractionalPart}00`.slice(0, 2);
-
-	return `${negative ? '-' : '+'}${groupedWhole}.${normalizedFraction}`;
+	return formatSignedDecimalAmount(rawAmount);
 }

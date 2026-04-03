@@ -1,12 +1,6 @@
 import { z } from 'zod';
 
-const accountTypeSchema = z.enum([
-	'Assets',
-	'Liabilities',
-	'Equity',
-	'Income',
-	'Expenses'
-]);
+const accountTypeSchema = z.enum(['Assets', 'Liabilities', 'Equity', 'Income', 'Expenses']);
 
 const accountSchema = z.object({
 	name: z.string(),
