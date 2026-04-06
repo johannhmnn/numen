@@ -26,6 +26,7 @@ build/
 coverage/
 playwright-report/
 test-results/
+.playwright-cli/
 .DS_Store
 
 # ---> Local database files

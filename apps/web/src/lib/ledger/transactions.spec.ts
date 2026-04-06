@@ -77,8 +77,8 @@ describe('createGuidedTransactionSchema', () => {
 		}
 
 		expect(buildGuidedTransactionFieldErrors(result.error)).toEqual({
-			date: 'Informe uma data valida.',
-			title: 'O titulo e obrigatorio.',
+			date: 'Informe uma data válida.',
+			title: 'O título é obrigatório.',
 			payee: undefined,
 			fundingAccount: 'Escolha uma conta de origem.',
 			categoryAccount: 'Escolha uma conta de categoria.',
@@ -126,7 +126,7 @@ describe('createGuidedTransactionSchema', () => {
 			fundingAccount: 'Assets:Checking',
 			categoryAccount: 'Expenses:Groceries',
 			amount: '48,2',
-			tags: 'alimentacao'
+			tags: 'alimentação'
 		});
 
 		expect(result.postings).toEqual([

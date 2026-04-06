@@ -89,7 +89,7 @@ describe('AppearanceDock', () => {
 
 		expect(document.documentElement.dataset.theme).toBe('dark');
 		expect(document.documentElement.style.colorScheme).toBe('dark');
-		expect((screen.getByRole('radio', { name: 'Sistema' }) as HTMLInputElement).checked).toBe(true);
+		expect(screen.getByRole('button', { name: 'Trocar tema de aparência' })).toBeTruthy();
 	});
 
 	it('uses a saved preference instead of the OS preference', async () => {
@@ -105,7 +105,11 @@ describe('AppearanceDock', () => {
 		});
 
 		expect(document.documentElement.dataset.theme).toBe('light');
-		expect((screen.getByRole('radio', { name: 'Claro' }) as HTMLInputElement).checked).toBe(true);
+		await fireEvent.click(screen.getByRole('button', { name: 'Trocar tema de aparência' }));
+		expect(screen.getByRole('menuitemradio', { name: /^Claro\b/u })).toHaveAttribute(
+			'data-state',
+			'checked'
+		);
 		expect(screen.getByText('Claro fixo')).toBeTruthy();
 	});
 
@@ -125,23 +129,29 @@ describe('AppearanceDock', () => {
 			expect(document.documentElement.dataset.theme).toBe('dark');
 		});
 
-		expect((screen.getByRole('radio', { name: 'Sistema' }) as HTMLInputElement).checked).toBe(true);
+		await fireEvent.click(screen.getByRole('button', { name: 'Trocar tema de aparência' }));
+		expect(screen.getByRole('menuitemradio', { name: /^Sistema\b/u })).toHaveAttribute(
+			'data-state',
+			'checked'
+		);
 		expect(screen.getByText('Sistema ativo - Escuro agora')).toBeTruthy();
 	});
 
-	it('exposes an accessible three-way toggle and persists explicit selections', async () => {
+	it('exposes an accessible theme dropdown and persists explicit selections', async () => {
 		const media = new MatchMediaController(false);
 		media.install();
 
 		render(AppearanceDock);
 
-		const radioGroup = screen.getByRole('radiogroup', { name: 'Tema de cores' });
+		const trigger = screen.getByRole('button', { name: 'Trocar tema de aparência' });
+		await fireEvent.click(trigger);
+		const menu = screen.getByRole('menu', { name: 'Menu de aparência' });
 
-		expect(within(radioGroup).getByRole('radio', { name: 'Claro' })).toBeTruthy();
-		expect(within(radioGroup).getByRole('radio', { name: 'Escuro' })).toBeTruthy();
-		expect(within(radioGroup).getByRole('radio', { name: 'Sistema' })).toBeTruthy();
+		expect(within(menu).getByRole('menuitemradio', { name: /^Claro\b/u })).toBeTruthy();
+		expect(within(menu).getByRole('menuitemradio', { name: /^Escuro\b/u })).toBeTruthy();
+		expect(within(menu).getByRole('menuitemradio', { name: /^Sistema\b/u })).toBeTruthy();
 
-		await fireEvent.click(within(radioGroup).getByRole('radio', { name: 'Escuro' }));
+		await fireEvent.click(within(menu).getByRole('menuitemradio', { name: /^Escuro\b/u }));
 
 		await waitFor(() => {
 			expect(document.documentElement.dataset.themePreference).toBe('dark');
@@ -149,11 +159,13 @@ describe('AppearanceDock', () => {
 
 		expect(document.documentElement.dataset.theme).toBe('dark');
 		expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
-		expect(
-			(within(radioGroup).getByRole('radio', { name: 'Escuro' }) as HTMLInputElement).checked
-		).toBe(true);
+		await fireEvent.click(trigger);
+		expect(screen.getByRole('menuitemradio', { name: /^Escuro\b/u })).toHaveAttribute(
+			'data-state',
+			'checked'
+		);
 
-		await fireEvent.click(within(radioGroup).getByRole('radio', { name: 'Sistema' }));
+		await fireEvent.click(screen.getByRole('menuitemradio', { name: /^Sistema\b/u }));
 
 		await waitFor(() => {
 			expect(document.documentElement.dataset.themePreference).toBe('system');
@@ -161,8 +173,10 @@ describe('AppearanceDock', () => {
 
 		expect(document.documentElement.dataset.theme).toBe('light');
 		expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('system');
-		expect(
-			(within(radioGroup).getByRole('radio', { name: 'Sistema' }) as HTMLInputElement).checked
-		).toBe(true);
+		await fireEvent.click(trigger);
+		expect(screen.getByRole('menuitemradio', { name: /^Sistema\b/u })).toHaveAttribute(
+			'data-state',
+			'checked'
+		);
 	});
 });

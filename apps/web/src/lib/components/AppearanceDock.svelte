@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
+	import MonitorCogIcon from '@lucide/svelte/icons/monitor-cog';
 
 	import {
 		PREFERS_DARK_THEME_QUERY,
@@ -16,6 +18,9 @@
 		type ThemePreference,
 		writeStoredThemePreference
 	} from '$lib/theme';
+	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
+	import { cn } from '$lib/utils';
 	import { ptBrCopy } from '$lib/locale';
 
 	const root = browser ? document.documentElement : null;
@@ -24,6 +29,9 @@
 	let resolvedTheme = $state<ResolvedTheme>(readInitialResolvedTheme(root));
 	let systemTheme = $state<ResolvedTheme>(readInitialResolvedTheme(root));
 
+	let selectedTheme = $derived(
+		THEME_OPTIONS.find((option) => option.value === themePreference) ?? THEME_OPTIONS[2]
+	);
 	let statusCopy = $derived.by(() => {
 		if (themePreference === 'system') {
 			return ptBrCopy.appearance.statusSystemActive(resolvedTheme);
@@ -64,122 +72,58 @@
 	}
 </script>
 
-<section class="appearance-dock" aria-label={ptBrCopy.appearance.sectionLabel}>
-	<div class="appearance-copy">
-		<p class="appearance-kicker">{ptBrCopy.appearance.kicker}</p>
-		<p class="appearance-status">{statusCopy}</p>
-	</div>
+<DropdownMenu.Root>
+	<DropdownMenu.Trigger
+		aria-label={ptBrCopy.appearance.triggerLabel}
+		class={cn(
+			buttonVariants({ variant: 'outline', size: 'sm' }),
+			'rounded-full border-[color:var(--chrome-line)] bg-[color:var(--chrome-surface)] px-3 text-[color:var(--ink)] shadow-[var(--chrome-shadow)] backdrop-blur md:px-4'
+		)}
+	>
+		<MonitorCogIcon />
+		<span class="hidden font-medium sm:inline">{selectedTheme.label}</span>
+		<ChevronsUpDownIcon class="text-[color:var(--ink-soft)]" />
+	</DropdownMenu.Trigger>
 
-	<div class="appearance-toggle" role="radiogroup" aria-label={ptBrCopy.appearance.radioGroupLabel}>
-		{#each THEME_OPTIONS as option (option.value)}
-			<label class:selected={themePreference === option.value} title={option.description}>
-				<input
-					type="radio"
-					name="theme-preference"
+	<DropdownMenu.Content
+		align="end"
+		aria-label={ptBrCopy.appearance.menuLabel}
+		class="border-border/70 w-72 border bg-[color:var(--paper-lift)] p-2 text-[color:var(--ink)] shadow-[var(--chrome-shadow)] backdrop-blur"
+	>
+		<DropdownMenu.Label class="px-3 py-2">
+			<div class="grid gap-1">
+				<p
+					class="[font-family:var(--font-mono)] text-[0.68rem] tracking-[0.18em] text-[color:var(--accent)] uppercase"
+				>
+					{ptBrCopy.appearance.kicker}
+				</p>
+				<p class="text-sm font-semibold text-[color:var(--ink)]">{selectedTheme.label}</p>
+				<p class="text-xs leading-relaxed text-[color:var(--ink-soft)]">{statusCopy}</p>
+			</div>
+		</DropdownMenu.Label>
+
+		<DropdownMenu.Separator class="bg-border/70 mx-1 my-1" />
+
+		<DropdownMenu.RadioGroup value={themePreference}>
+			{#each THEME_OPTIONS as option (option.value)}
+				<DropdownMenu.RadioItem
 					value={option.value}
-					checked={themePreference === option.value}
-					onchange={() => setThemePreference(option.value)}
-				/>
-				<span>{option.label}</span>
-			</label>
-		{/each}
-	</div>
-</section>
-
-<style>
-	.appearance-dock {
-		display: grid;
-		gap: 0.55rem;
-		padding: 0.8rem;
-		border: 1px solid var(--chrome-line);
-		border-radius: 1.5rem;
-		background: var(--chrome-surface);
-		box-shadow: var(--chrome-shadow);
-		backdrop-filter: blur(16px);
-	}
-
-	.appearance-copy {
-		display: grid;
-		gap: 0.18rem;
-	}
-
-	.appearance-kicker,
-	.appearance-status,
-	.appearance-toggle label span {
-		font-family: var(--font-mono);
-	}
-
-	.appearance-kicker {
-		margin: 0;
-		font-size: 0.68rem;
-		text-transform: uppercase;
-		letter-spacing: 0.18em;
-		color: var(--accent);
-	}
-
-	.appearance-status {
-		margin: 0;
-		font-size: 0.74rem;
-		line-height: 1.35;
-		color: var(--ink-soft);
-	}
-
-	.appearance-toggle {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.35rem;
-		padding: 0.28rem;
-		border-radius: 1.15rem;
-		background: var(--toggle-track);
-	}
-
-	.appearance-toggle label {
-		position: relative;
-		display: grid;
-		place-items: center;
-		border-radius: 0.95rem;
-		padding: 0.7rem 0.8rem;
-		min-width: 4.75rem;
-		color: var(--ink-soft);
-		cursor: pointer;
-		transition:
-			transform 160ms ease,
-			background-color 160ms ease,
-			color 160ms ease,
-			box-shadow 160ms ease;
-	}
-
-	.appearance-toggle label:hover {
-		transform: translateY(-1px);
-		color: var(--ink);
-	}
-
-	.appearance-toggle input {
-		position: absolute;
-		inset: 0;
-		margin: 0;
-		opacity: 0;
-		cursor: pointer;
-	}
-
-	.appearance-toggle label.selected {
-		background: var(--toggle-pill);
-		color: var(--toggle-pill-ink);
-		box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
-	}
-
-	.appearance-toggle input:focus-visible + span {
-		outline: 2px solid var(--focus-ring);
-		outline-offset: 2px;
-	}
-
-	@media (max-width: 640px) {
-		.appearance-dock {
-			width: 100%;
-		}
-
-		.appearance-toggle label {
-			min-width: 0;
-		}
-	}
-</style>
+					onclick={() => setThemePreference(option.value)}
+					class="items-start rounded-[1.25rem] px-3 py-3"
+				>
+					{#snippet children({ checked })}
+						<div class="grid gap-0.5 pr-4">
+							<span class="text-sm font-medium text-[color:var(--ink)]">{option.label}</span>
+							<span
+								class:text-[color:var(--accent)]={checked}
+								class="text-xs leading-relaxed text-[color:var(--ink-soft)]"
+							>
+								{option.description}
+							</span>
+						</div>
+					{/snippet}
+				</DropdownMenu.RadioItem>
+			{/each}
+		</DropdownMenu.RadioGroup>
+	</DropdownMenu.Content>
+</DropdownMenu.Root>

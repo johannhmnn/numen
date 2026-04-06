@@ -1,5 +1,11 @@
+@import 'tw-animate-css';
+@import 'shadcn-svelte/tailwind.css';
+@import '@fontsource-variable/ibm-plex-sans';
+@import '@fontsource-variable/space-grotesk';
+
 :root {
-	--font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', serif;
+	--font-display: 'Space Grotesk Variable', 'IBM Plex Sans Variable', sans-serif;
+	--font-body: 'IBM Plex Sans Variable', 'IBM Plex Sans', sans-serif;
 	--font-mono: 'IBM Plex Mono', 'SFMono-Regular', 'Courier New', monospace;
 	--page-background:
 		linear-gradient(180deg, rgba(255, 252, 247, 0.82), rgba(245, 234, 217, 0.96)),
@@ -23,7 +29,7 @@
 	--line: rgba(58, 38, 25, 0.16);
 	--line-soft: rgba(58, 38, 25, 0.08);
 	--line-strong: rgba(58, 38, 25, 0.1);
-	--accent: #8b4f2b;
+	--accent: oklch(0.508 0.118 165.612);
 	--accent-soft: rgba(139, 79, 43, 0.12);
 	--field-border: rgba(73, 43, 24, 0.16);
 	--field-border-hover: rgba(139, 79, 43, 0.32);
@@ -48,6 +54,37 @@
 	--chrome-shadow: 0 18px 40px rgba(69, 42, 25, 0.12);
 	--ghost-surface: rgba(255, 250, 244, 0.84);
 	--focus-ring: rgba(139, 79, 43, 0.72);
+	--background: #fcf6ed;
+	--foreground: #26180f;
+	--card: rgba(255, 250, 244, 0.82);
+	--card-foreground: #26180f;
+	--popover: rgba(249, 239, 226, 0.96);
+	--popover-foreground: #26180f;
+	--primary: oklch(0.508 0.118 165.612);
+	--primary-foreground: oklch(0.979 0.021 166.113);
+	--secondary: rgba(93, 69, 52, 0.08);
+	--secondary-foreground: #26180f;
+	--muted: rgba(93, 69, 52, 0.08);
+	--muted-foreground: #5a4739;
+	--accent-foreground: oklch(0.979 0.021 166.113);
+	--destructive: #8c2c22;
+	--border: rgba(73, 43, 24, 0.14);
+	--input: rgba(255, 250, 244, 0.88);
+	--ring: rgba(139, 79, 43, 0.52);
+	--chart-1: oklch(0.845 0.143 164.978);
+	--chart-2: oklch(0.696 0.17 162.48);
+	--chart-3: oklch(0.596 0.145 163.225);
+	--chart-4: oklch(0.508 0.118 165.612);
+	--chart-5: oklch(0.432 0.095 166.913);
+	--radius: 0.625rem;
+	--sidebar: oklch(0.986 0.002 67.8);
+	--sidebar-foreground: oklch(0.147 0.004 49.3);
+	--sidebar-primary: oklch(0.596 0.145 163.225);
+	--sidebar-primary-foreground: oklch(0.979 0.021 166.113);
+	--sidebar-accent: oklch(0.96 0.002 17.2);
+	--sidebar-accent-foreground: oklch(0.214 0.009 43.1);
+	--sidebar-border: oklch(0.922 0.005 34.3);
+	--sidebar-ring: oklch(0.714 0.014 41.2);
 }
 
 :root[data-theme='dark'] {
@@ -99,6 +136,23 @@
 	--chrome-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
 	--ghost-surface: rgba(31, 23, 20, 0.92);
 	--focus-ring: rgba(239, 189, 147, 0.82);
+	--background: #171111;
+	--foreground: #f4e8db;
+	--card: rgba(28, 21, 19, 0.88);
+	--card-foreground: #f4e8db;
+	--popover: rgba(24, 18, 15, 0.96);
+	--popover-foreground: #f4e8db;
+	--primary: #df9e6f;
+	--primary-foreground: #150e0b;
+	--secondary: rgba(255, 233, 211, 0.08);
+	--secondary-foreground: #f4e8db;
+	--muted: rgba(255, 233, 211, 0.08);
+	--muted-foreground: #ccb5a0;
+	--accent-foreground: #150e0b;
+	--destructive: #f0a08d;
+	--border: rgba(229, 191, 153, 0.16);
+	--input: rgba(44, 31, 27, 0.92);
+	--ring: rgba(239, 189, 147, 0.48);
 }
 
 html {
@@ -110,7 +164,7 @@ html {
 body {
 	margin: 0;
 	min-height: 100vh;
-	font-family: var(--font-display);
+	font-family: var(--font-body);
 	color: var(--ink);
 	background: var(--page-background);
 	transition:
@@ -141,4 +195,19 @@ textarea {
 :focus-visible {
 	outline: 2px solid var(--focus-ring);
 	outline-offset: 2px;
+}
+
+@layer base {
+	* {
+		border-color: var(--border);
+		outline-color: var(--ring);
+	}
+	body {
+		background-color: var(--background);
+		color: var(--foreground);
+		font-family: var(--font-body);
+	}
+	html {
+		font-family: var(--font-body);
+	}
 }

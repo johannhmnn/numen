@@ -28,6 +28,7 @@ Numen is a local-first personal-finance app built around double-entry bookkeepin
 - `just lint`: run Rust and frontend linting checks
 - `just check`: run the core non-E2E verification suite
 - `just ci`: run formatting, linting, unit/integration checks, and E2E tests
+- `pnpm dlx shadcn-svelte@latest add <COMPONENT>`: add a new shadcn-svelte UI primitive to `apps/web`
 
 Frontend editor tooling:
 

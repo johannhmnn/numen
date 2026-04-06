@@ -79,6 +79,7 @@ Run commands from the repository root unless a file says otherwise.
 - `just check`
 - `just install-playwright`
 - `pnpm --dir apps/web run tailwind:lsp`
+- `pnpm dlx shadcn-svelte@latest add <COMPONENT>`
 
 Equivalent direct commands that exist today:
 
@@ -91,6 +92,7 @@ Equivalent direct commands that exist today:
 - `pnpm --dir apps/web exec tailwindcss-language-server --stdio`
 - `pnpm --dir apps/web test:unit -- --run`
 - `pnpm --dir apps/web test:e2e`
+- `pnpm dlx shadcn-svelte@latest add <COMPONENT>`
 
 Browser-backed frontend tests may fail in restricted sandboxes even when the project is correct. Do not delete or weaken browser coverage to satisfy a sandbox limitation. Note the environment constraint instead.
 

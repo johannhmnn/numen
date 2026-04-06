@@ -1,6 +1,143 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test('guided transaction entry works end to end in the browser', async ({ page }) => {
+	page.on('pageerror', (error) => console.log('PAGEERROR', error.message));
+	page.on('console', (message) => {
+		if (message.type() === 'error') {
+			console.log('BROWSER_CONSOLE_ERROR', message.text());
+		}
+	});
+
+	await wireLedgerApiMocks(page);
+
+	await page.emulateMedia({ colorScheme: 'dark' });
+	await page.goto('/');
+
+	await expect(page.getByText(/Lance as transações que você realmente lembra\./)).toBeVisible();
+	await expect(page.getByText(/Escolha as contas que estruturam cada lançamento\./)).toBeVisible();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+	await expect(
+		page.getByText(
+			'Registre uma transação e ela aparecerá aqui como a movimentação mais recente do seu razão.'
+		)
+	).toBeVisible();
+
+	const themeTrigger = page.getByRole('button', { name: 'Trocar tema de aparência' });
+
+	await themeTrigger.click();
+	await page.getByRole('menuitemradio', { name: 'Claro' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'light');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+
+	await themeTrigger.click();
+	await page.getByRole('menuitemradio', { name: 'Escuro' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'dark');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+	await themeTrigger.click();
+	await page.getByRole('menuitemradio', { name: 'Sistema' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+	const accountForm = page.getByRole('form', { name: 'Adicionar conta' });
+	const fundingSection = page.getByLabel('Contas de origem');
+	const categorySection = page.getByLabel('Contas de categoria');
+
+	await accountForm.getByLabel('Nome da conta').fill('Assets:Checking');
+	await accountForm.getByLabel('Tipo de conta').selectOption('Assets');
+	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
+	await expect(fundingSection.getByText('Assets:Checking')).toBeVisible();
+
+	await accountForm.getByLabel('Nome da conta').fill('Expenses:Groceries');
+	await accountForm.getByLabel('Tipo de conta').selectOption('Expenses');
+	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
+	await expect(categorySection.getByText('Expenses:Groceries')).toBeVisible();
+
+	const transactionForm = page.getByRole('form', { name: 'Lançamento guiado de transação' });
+
+	await transactionForm.getByLabel('Data').fill('2026-04-02');
+	await transactionForm.getByLabel('Título').fill('Groceries');
+	await transactionForm.getByLabel('Favorecido').fill('Mercado Central');
+	await transactionForm.getByLabel('Valor').fill('48,20');
+	await transactionForm.getByRole('textbox', { name: 'Tags' }).fill('food, weekly');
+	await transactionForm.getByRole('button', { name: 'Registrar transação' }).click();
+
+	await expect(page.getByText('Transação registrada no razão local.')).toBeVisible();
+
+	const recentPanel = page.locator('section').filter({
+		has: page.getByRole('heading', {
+			name: 'As transações mais novas aparecem assim que entram.'
+		})
+	});
+	const latestTransaction = recentPanel.locator('.transaction-list li').first();
+
+	await expect(latestTransaction.getByText('Groceries', { exact: true })).toBeVisible();
+	await expect(latestTransaction.getByText('Mercado Central')).toBeVisible();
+	await expect(latestTransaction.getByText('+48,20')).toBeVisible();
+});
+
+test('mobile layout keeps the transaction flow in the first viewport and exposes setup via accordion', async ({
+	page
+}) => {
+	page.on('pageerror', (error) => console.log('PAGEERROR', error.message));
+	page.on('console', (message) => {
+		if (message.type() === 'error') {
+			console.log('BROWSER_CONSOLE_ERROR', message.text());
+		}
+	});
+
+	await wireLedgerApiMocks(page);
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/');
+
+	const viewportMetrics = await page.evaluate(() => {
+		const doc = document.documentElement;
+
+		return {
+			scrollWidth: doc.scrollWidth,
+			clientWidth: doc.clientWidth
+		};
+	});
+
+	expect(viewportMetrics.scrollWidth).toBeLessThanOrEqual(viewportMetrics.clientWidth);
+	await expect(
+		page.getByText(/Registre uma conta de origem, uma conta de categoria e um valor claro\./)
+	).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Abrir painel de contas' })).toBeVisible();
+
+	await page.getByRole('button', { name: 'Trocar tema de aparência' }).click();
+	await page.getByRole('menuitemradio', { name: 'Claro' }).click();
+	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'light');
+
+	const accountDeskToggle = page.getByRole('button', { name: /Painel de contas e configuração/i });
+	await accountDeskToggle.click();
+
+	const accountForm = page.getByRole('form', { name: 'Adicionar conta' });
+	await expect(accountForm).toBeVisible();
+
+	await accountForm.getByLabel('Nome da conta').fill('Assets:Checking');
+	await accountForm.getByLabel('Tipo de conta').selectOption('Assets');
+	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
+
+	await accountForm.getByLabel('Nome da conta').fill('Expenses:Groceries');
+	await accountForm.getByLabel('Tipo de conta').selectOption('Expenses');
+	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
+
+	const transactionForm = page.getByRole('form', { name: 'Lançamento guiado de transação' });
+	await transactionForm.getByLabel('Data').fill('2026-04-02');
+	await transactionForm.getByLabel('Título').fill('Mercado');
+	await transactionForm.getByLabel('Favorecido').fill('Mercado Central');
+	await transactionForm.getByLabel('Valor').fill('48,20');
+	await transactionForm.getByRole('textbox', { name: 'Tags' }).fill('alimentação, semanal');
+	await transactionForm.getByRole('button', { name: 'Registrar transação' }).click();
+
+	await expect(page.getByText('Transação registrada no razão local.')).toBeVisible();
+	await expect(page.locator('.transaction-list li').first().getByText('Mercado')).toBeVisible();
+});
+
+async function wireLedgerApiMocks(page: Page) {
 	const accounts: Array<{ name: string; type: string }> = [];
 	const transactions: Array<{
 		date: string;
@@ -46,75 +183,4 @@ test('guided transaction entry works end to end in the browser', async ({ page }
 
 		throw new Error(`Unhandled transactions route method: ${method}`);
 	});
-
-	await page.emulateMedia({ colorScheme: 'dark' });
-	await page.goto('/');
-
-	await expect(
-		page.getByRole('heading', {
-			name: 'Lance as transacoes que voce realmente lembra.'
-		})
-	).toBeVisible();
-	await expect(
-		page.getByRole('heading', { name: 'Escolha as contas que estruturam cada lancamento.' })
-	).toBeVisible();
-	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
-	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-	await expect(page.getByRole('radio', { name: 'Sistema' })).toBeChecked();
-	await expect(
-		page.getByText(
-			'Registre uma transacao e ela aparecera aqui como a movimentacao mais recente do seu razao.'
-		)
-	).toBeVisible();
-
-	await page.getByRole('radio', { name: 'Claro' }).click();
-	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'light');
-	await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-	await expect(page.getByRole('radio', { name: 'Claro' })).toBeChecked();
-
-	await page.getByRole('radio', { name: 'Escuro' }).click();
-	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'dark');
-	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-	await expect(page.getByRole('radio', { name: 'Escuro' })).toBeChecked();
-
-	await page.getByRole('radio', { name: 'Sistema' }).click();
-	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
-	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-	await expect(page.getByRole('radio', { name: 'Sistema' })).toBeChecked();
-
-	const accountForm = page.getByRole('form', { name: 'Adicionar conta' });
-	const fundingSection = page.getByLabel('Contas de origem');
-	const categorySection = page.getByLabel('Contas de categoria');
-
-	await accountForm.getByLabel('Nome da conta').fill('Assets:Checking');
-	await accountForm.getByLabel('Tipo de conta').selectOption('Assets');
-	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
-	await expect(fundingSection.getByText('Assets:Checking')).toBeVisible();
-
-	await accountForm.getByLabel('Nome da conta').fill('Expenses:Groceries');
-	await accountForm.getByLabel('Tipo de conta').selectOption('Expenses');
-	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
-	await expect(categorySection.getByText('Expenses:Groceries')).toBeVisible();
-
-	const transactionForm = page.getByRole('form', { name: 'Lancamento guiado de transacao' });
-
-	await transactionForm.getByLabel('Data').fill('2026-04-02');
-	await transactionForm.getByLabel('Titulo').fill('Groceries');
-	await transactionForm.getByLabel('Favorecido').fill('Mercado Central');
-	await transactionForm.getByLabel('Valor').fill('48,20');
-	await transactionForm.getByRole('textbox', { name: 'Tags' }).fill('food, weekly');
-	await transactionForm.getByRole('button', { name: 'Registrar transacao' }).click();
-
-	await expect(page.getByText('Transacao registrada no razao local.')).toBeVisible();
-
-	const recentPanel = page.locator('section').filter({
-		has: page.getByRole('heading', {
-			name: 'As transacoes mais novas aparecem assim que entram.'
-		})
-	});
-	const latestTransaction = recentPanel.locator('.transaction-list li').first();
-
-	await expect(latestTransaction.getByText('Groceries', { exact: true })).toBeVisible();
-	await expect(latestTransaction.getByText('Mercado Central')).toBeVisible();
-	await expect(latestTransaction.getByText('+48,20')).toBeVisible();
-});
+}

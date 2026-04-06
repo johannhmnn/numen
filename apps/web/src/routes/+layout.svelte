@@ -1,4 +1,5 @@
 <script lang="ts">
+	import './layout.css';
 	import { resolve } from '$app/paths';
 
 	import '../app.css';
@@ -15,74 +16,31 @@
 	<meta name="color-scheme" content="light dark" />
 </svelte:head>
 
-<div class="app-shell">
-	<header class="app-chrome">
-		<a class="brand-mark" href={resolve('/')} aria-label={ptBrCopy.layout.homeAriaLabel}>
-			<span>Numen</span>
-			<strong>{ptBrCopy.layout.localLedger}</strong>
-		</a>
+<div class="min-h-screen pb-8">
+	<header class="sticky top-0 z-20 px-3 pt-3 sm:px-4 md:px-6">
+		<div
+			class="mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-[1.75rem] border border-[color:var(--chrome-line)] bg-[color:var(--chrome-surface)] px-4 py-3 shadow-[var(--chrome-shadow)] backdrop-blur"
+		>
+			<a
+				class="grid min-w-0 gap-1 text-left no-underline"
+				href={resolve('/')}
+				aria-label={ptBrCopy.layout.homeAriaLabel}
+			>
+				<span
+					class="[font-family:var(--font-mono)] text-[0.68rem] tracking-[0.18em] text-[color:var(--accent)] uppercase"
+				>
+					Numen
+				</span>
+				<strong class="truncate text-sm font-semibold text-[color:var(--ink)] sm:text-base">
+					{ptBrCopy.layout.localLedger}
+				</strong>
+			</a>
 
-		<AppearanceDock />
+			<AppearanceDock />
+		</div>
 	</header>
 
-	<div class="app-stage">
+	<div class="relative">
 		{@render children()}
 	</div>
 </div>
-
-<style>
-	.app-shell {
-		min-height: 100vh;
-		padding: 0 0 1.5rem;
-	}
-
-	.app-chrome {
-		position: sticky;
-		top: 0;
-		z-index: 10;
-		max-width: 78rem;
-		margin: 0 auto;
-		padding: 1rem 1rem 0;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-	}
-
-	.brand-mark {
-		display: inline-grid;
-		gap: 0.2rem;
-		padding: 0.85rem 1rem;
-		border-radius: 1.4rem;
-		border: 1px solid var(--chrome-line);
-		background: var(--chrome-surface);
-		box-shadow: var(--chrome-shadow);
-		backdrop-filter: blur(16px);
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.brand-mark span {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-		text-transform: uppercase;
-		letter-spacing: 0.18em;
-		color: var(--accent);
-	}
-
-	.brand-mark strong {
-		font-size: 0.98rem;
-		font-weight: 600;
-	}
-
-	.app-stage {
-		position: relative;
-	}
-
-	@media (max-width: 720px) {
-		.app-chrome {
-			flex-direction: column;
-			align-items: stretch;
-		}
-	}
-</style>

@@ -25,12 +25,24 @@ describe('LedgerWorkspace', () => {
 
 		render(LedgerWorkspace);
 
-		expect(screen.getByText('Carregando as contas do seu razao...')).toBeTruthy();
-
 		await waitFor(() => {
 			expect(
-				screen.getByText('Crie pelo menos uma conta de categoria para liberar o lancamento guiado.')
+				screen.getByText('Crie pelo menos uma conta de categoria para liberar o lançamento guiado.')
 			).toBeTruthy();
+		});
+
+		expect(screen.getByRole('button', { name: 'Abrir painel de contas' })).toBeTruthy();
+		const accordionButton = screen.getByText('Painel de contas e configuração').closest('button');
+		expect(accordionButton).toBeTruthy();
+
+		await fireEvent.click(accordionButton as HTMLButtonElement);
+		await waitFor(() => {
+			expect(screen.queryByRole('form', { name: 'Adicionar conta' })).toBeNull();
+		});
+
+		await fireEvent.click(accordionButton as HTMLButtonElement);
+		await waitFor(() => {
+			expect(screen.getByRole('form', { name: 'Adicionar conta' })).toBeTruthy();
 		});
 
 		const fundingSection = screen.getByLabelText('Contas de origem');
@@ -43,7 +55,7 @@ describe('LedgerWorkspace', () => {
 			)
 		).toBeTruthy();
 		expect(
-			(screen.getByRole('button', { name: 'Registrar transacao' }) as HTMLButtonElement).disabled
+			(screen.getByRole('button', { name: 'Registrar transação' }) as HTMLButtonElement).disabled
 		).toBe(true);
 	});
 
@@ -59,7 +71,7 @@ describe('LedgerWorkspace', () => {
 		await waitFor(() => {
 			expect(
 				screen.getByText(
-					'Adicione uma conta de origem e uma conta de categoria para liberar o lancamento guiado.'
+					'Adicione uma conta de origem e uma conta de categoria para liberar o lançamento guiado.'
 				)
 			).toBeTruthy();
 		});
@@ -102,13 +114,11 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText('As contas de origem e categoria estao prontas para o lancamento guiado.')
+				screen.getByText('As contas de origem e categoria estão prontas para o lançamento guiado.')
 			).toBeTruthy();
 		});
 
-		const transactionForm = screen.getByRole('form', {
-			name: 'Lancamento guiado de transacao'
-		});
+		const transactionForm = screen.getByRole('form', { name: 'Lançamento guiado de transação' });
 		const fundingSelect = within(transactionForm).getByLabelText('Conta de origem');
 		const categorySelect = within(transactionForm).getByLabelText('Conta de categoria');
 
@@ -139,23 +149,21 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText('As contas de origem e categoria estao prontas para o lancamento guiado.')
+				screen.getByText('As contas de origem e categoria estão prontas para o lançamento guiado.')
 			).toBeTruthy();
 		});
 
-		const transactionForm = screen.getByRole('form', {
-			name: 'Lancamento guiado de transacao'
-		});
+		const transactionForm = screen.getByRole('form', { name: 'Lançamento guiado de transação' });
 
 		await fireEvent.submit(transactionForm);
 
 		await waitFor(() => {
-			expect(within(transactionForm).getByText('O titulo e obrigatorio.')).toBeTruthy();
+			expect(within(transactionForm).getByText('O título é obrigatório.')).toBeTruthy();
 		});
 
-		expect(within(transactionForm).getByText('O valor e obrigatorio.')).toBeTruthy();
+		expect(within(transactionForm).getByText('O valor é obrigatório.')).toBeTruthy();
 
-		await fireEvent.input(within(transactionForm).getByLabelText('Titulo'), {
+		await fireEvent.input(within(transactionForm).getByLabelText('Título'), {
 			target: { value: 'Groceries' }
 		});
 		await fireEvent.input(within(transactionForm).getByLabelText('Data'), {
@@ -168,12 +176,12 @@ describe('LedgerWorkspace', () => {
 			target: { value: '48,2' }
 		});
 		await fireEvent.input(within(transactionForm).getByLabelText('Tags'), {
-			target: { value: 'alimentacao, semanal' }
+			target: { value: 'alimentação, semanal' }
 		});
 		await fireEvent.submit(transactionForm);
 
 		await waitFor(() => {
-			expect(screen.getByText('Transacao registrada no razao local.')).toBeTruthy();
+			expect(screen.getByText('Transação registrada no razão local.')).toBeTruthy();
 		});
 
 		expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:3000/transactions', {
@@ -192,7 +200,7 @@ describe('LedgerWorkspace', () => {
 			title: 'Groceries',
 			payee: 'Mercado Central',
 			primary_category: 'Expenses:Groceries',
-			tags: ['alimentacao', 'semanal'],
+			tags: ['alimentação', 'semanal'],
 			postings: [
 				{ account: 'Assets:Checking', amount: '-48.20' },
 				{ account: 'Expenses:Groceries', amount: '48.20' }
@@ -228,14 +236,12 @@ describe('LedgerWorkspace', () => {
 			expect(screen.getByText('Coffee')).toBeTruthy();
 		});
 
-		const transactionForm = screen.getByRole('form', {
-			name: 'Lancamento guiado de transacao'
-		});
+		const transactionForm = screen.getByRole('form', { name: 'Lançamento guiado de transação' });
 
 		await fireEvent.input(within(transactionForm).getByLabelText('Data'), {
 			target: { value: '2026-04-03' }
 		});
-		await fireEvent.input(within(transactionForm).getByLabelText('Titulo'), {
+		await fireEvent.input(within(transactionForm).getByLabelText('Título'), {
 			target: { value: 'Groceries' }
 		});
 		await fireEvent.input(within(transactionForm).getByLabelText('Valor'), {
@@ -248,19 +254,17 @@ describe('LedgerWorkspace', () => {
 		});
 
 		const recentPanelHeading = screen.getByRole('heading', {
-			name: 'As transacoes mais novas aparecem assim que entram.'
+			name: 'As transações mais novas aparecem assim que entram.'
 		});
 		const recentPanel = recentPanelHeading.closest('section');
 
 		expect(recentPanel).toBeTruthy();
 
-		const transactionTitles = within(recentPanel as HTMLElement)
-			.getAllByRole('listitem')
-			.map((entry) => within(entry).getByRole('strong', { hidden: true }));
-		expect(transactionTitles).toHaveLength(2);
-		expect(
-			within(transactionTitles[0] as unknown as HTMLElement).queryByText('Groceries')
-		).toBeTruthy();
+		const transactionEntries = within(recentPanel as HTMLElement).getAllByRole('listitem');
+
+		expect(transactionEntries).toHaveLength(2);
+		expect(within(transactionEntries[0]).getByText('Groceries')).toBeTruthy();
+		expect(within(transactionEntries[1]).getByText('Coffee')).toBeTruthy();
 	});
 });
 
