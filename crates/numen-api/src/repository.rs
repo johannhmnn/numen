@@ -175,7 +175,7 @@ impl LedgerRepository for SqliteLedgerRepository {
         let rows = sqlx::query(
             "SELECT id, date, title, payee, primary_category
              FROM transactions
-             ORDER BY date DESC, id DESC",
+             ORDER BY date DESC, rowid DESC",
         )
         .fetch_all(&self.pool)
         .await?;
@@ -349,6 +349,45 @@ mod tests {
         let older = sample_transaction();
         let newer = Transaction::new(
             Some(date!(2026 - 03 - 26)),
+            "Dinner",
+            Some("Bistro".to_owned()),
+            Some("Dining".to_owned()),
+            vec!["evening".to_owned()],
+            vec![
+                Posting::new("Assets:Checking", Money::new(Decimal::new(-4200, 2)))
+                    .expect("posting"),
+                Posting::new("Expenses:Groceries", Money::new(Decimal::new(4200, 2)))
+                    .expect("posting"),
+            ],
+        )
+        .expect("transaction");
+
+        repository
+            .create_transaction(&older)
+            .await
+            .expect("older transaction");
+        repository
+            .create_transaction(&newer)
+            .await
+            .expect("newer transaction");
+
+        let transactions = repository
+            .list_transactions()
+            .await
+            .expect("list transactions");
+
+        assert_eq!(transactions, vec![newer, older]);
+    }
+
+    #[tokio::test]
+    async fn list_transactions_keeps_same_day_insertion_order_newest_first() {
+        let repository = SqliteLedgerRepository::connect_in_memory()
+            .await
+            .expect("repository");
+        seed_accounts(&repository).await;
+        let older = sample_transaction();
+        let newer = Transaction::new(
+            Some(date!(2026 - 03 - 25)),
             "Dinner",
             Some("Bistro".to_owned()),
             Some("Dining".to_owned()),
