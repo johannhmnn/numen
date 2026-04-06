@@ -19,6 +19,7 @@
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
+	import { formatLocalDateInputValue } from '$lib/date';
 	import * as Empty from '$lib/components/ui/empty/index.js';
 	import * as Field from '$lib/components/ui/field/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
@@ -250,7 +251,7 @@
 	}
 
 	function getTodayDate(): string {
-		return new Date().toISOString().slice(0, 10);
+		return formatLocalDateInputValue();
 	}
 </script>
 
