@@ -78,6 +78,7 @@ Run commands from the repository root unless a file says otherwise.
 - `just lint`
 - `just check`
 - `just install-playwright`
+- `pnpm --dir apps/web run tailwind:lsp`
 
 Equivalent direct commands that exist today:
 
@@ -87,10 +88,13 @@ Equivalent direct commands that exist today:
 - `cargo clippy --workspace --all-targets -- -D warnings`
 - `pnpm --dir apps/web check`
 - `pnpm --dir apps/web lint`
+- `pnpm --dir apps/web exec tailwindcss-language-server --stdio`
 - `pnpm --dir apps/web test:unit -- --run`
 - `pnpm --dir apps/web test:e2e`
 
 Browser-backed frontend tests may fail in restricted sandboxes even when the project is correct. Do not delete or weaken browser coverage to satisfy a sandbox limitation. Note the environment constraint instead.
+
+Tailwind CSS diagnostics use the official language-server/editor path, not the repo's CLI lint path. Treat `pnpm --dir apps/web exec tailwindcss-language-server --stdio` as an editor or agent LSP process for autocomplete and diagnostics, not as a CI lint command.
 
 ## Engineering Conventions
 

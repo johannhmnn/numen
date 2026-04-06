@@ -29,6 +29,12 @@ Numen is a local-first personal-finance app built around double-entry bookkeepin
 - `just check`: run the core non-E2E verification suite
 - `just ci`: run formatting, linting, unit/integration checks, and E2E tests
 
+Frontend editor tooling:
+
+- `pnpm --dir apps/web run tailwind:lsp`: start Tailwind's official language server over stdio for editor or agent integration
+
+Tailwind diagnostics are editor-driven in this repo. The existing frontend lint command remains `prettier --check . && eslint .`; Tailwind's language server is for autocomplete and diagnostics in editors, not a CI lint replacement.
+
 ## CI
 
 Woodpecker workflows live under `.woodpecker/`:
