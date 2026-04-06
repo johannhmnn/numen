@@ -48,6 +48,7 @@ test('guided transaction entry works end to end in the browser', async ({ page }
 	await accountForm.getByLabel('Tipo de conta').selectOption('Assets');
 	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
 	await expect(fundingSection.getByText('Assets:Checking')).toBeVisible();
+	await expect(accountForm.getByLabel('Nome da conta')).toHaveValue('');
 
 	await accountForm.getByLabel('Nome da conta').fill('Expenses:Groceries');
 	await accountForm.getByLabel('Tipo de conta').selectOption('Expenses');
@@ -61,7 +62,12 @@ test('guided transaction entry works end to end in the browser', async ({ page }
 	await transactionForm.getByLabel('Favorecido').fill('Mercado Central');
 	await transactionForm.getByLabel('Valor').fill('48,20');
 	await transactionForm.getByRole('textbox', { name: 'Tags' }).fill('food, weekly');
-	await transactionForm.getByRole('button', { name: 'Registrar transação' }).click();
+	await expect(transactionForm.getByLabel('Conta de origem')).toHaveValue('Assets:Checking');
+	await expect(transactionForm.getByLabel('Conta de categoria')).toHaveValue('Expenses:Groceries');
+
+	const submitTransactionButton = page.getByRole('button', { name: 'Registrar transação' });
+	await expect(submitTransactionButton).toBeEnabled();
+	await submitTransactionButton.click();
 
 	await expect(page.getByText('Transação registrada no razão local.')).toBeVisible();
 
@@ -120,10 +126,12 @@ test('mobile layout keeps the transaction flow in the first viewport and exposes
 	await accountForm.getByLabel('Nome da conta').fill('Assets:Checking');
 	await accountForm.getByLabel('Tipo de conta').selectOption('Assets');
 	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
+	await expect(accountForm.getByLabel('Nome da conta')).toHaveValue('');
 
 	await accountForm.getByLabel('Nome da conta').fill('Expenses:Groceries');
 	await accountForm.getByLabel('Tipo de conta').selectOption('Expenses');
 	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
+	await expect(page.getByLabel('Contas de categoria').getByText('Expenses:Groceries')).toBeVisible();
 
 	const transactionForm = page.getByRole('form', { name: 'Lançamento guiado de transação' });
 	await transactionForm.getByLabel('Data').fill('2026-04-02');
@@ -131,10 +139,17 @@ test('mobile layout keeps the transaction flow in the first viewport and exposes
 	await transactionForm.getByLabel('Favorecido').fill('Mercado Central');
 	await transactionForm.getByLabel('Valor').fill('48,20');
 	await transactionForm.getByRole('textbox', { name: 'Tags' }).fill('alimentação, semanal');
-	await transactionForm.getByRole('button', { name: 'Registrar transação' }).click();
+	await expect(transactionForm.getByLabel('Conta de origem')).toHaveValue('Assets:Checking');
+	await expect(transactionForm.getByLabel('Conta de categoria')).toHaveValue('Expenses:Groceries');
+
+	const submitTransactionButton = page.getByRole('button', { name: 'Registrar transação' });
+	await expect(submitTransactionButton).toBeEnabled();
+	await submitTransactionButton.click();
 
 	await expect(page.getByText('Transação registrada no razão local.')).toBeVisible();
-	await expect(page.locator('.transaction-list li').first().getByText('Mercado')).toBeVisible();
+	await expect(
+		page.locator('.transaction-list li').first().getByText('Mercado', { exact: true })
+	).toBeVisible();
 });
 
 async function wireLedgerApiMocks(page: Page) {

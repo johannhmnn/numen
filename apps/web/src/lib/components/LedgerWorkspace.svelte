@@ -582,7 +582,7 @@
 				<Card.Content class="px-5 sm:px-6">
 					{#if transactionsState === 'loading'}
 						<div class="grid gap-3" aria-label={ptBrCopy.workspace.loadingTransactions}>
-							{#each Array.from({ length: 3 }) as skeletonIndex (skeletonIndex)}
+							{#each Array.from({ length: 3 }, (_, index) => index) as skeletonIndex (skeletonIndex)}
 								<div
 									class="border-border/60 bg-background/70 grid gap-2 rounded-[1.5rem] border p-4"
 									data-skeleton={skeletonIndex}

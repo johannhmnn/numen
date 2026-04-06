@@ -27,18 +27,17 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText('Crie pelo menos uma conta de categoria para liberar o lançamento guiado.')
-			).toBeTruthy();
+				screen.getAllByText(
+					'Crie pelo menos uma conta de categoria para liberar o lançamento guiado.'
+				)
+			).toHaveLength(2);
 		});
 
 		expect(screen.getByRole('button', { name: 'Abrir painel de contas' })).toBeTruthy();
 		const accordionButton = screen.getByText('Painel de contas e configuração').closest('button');
 		expect(accordionButton).toBeTruthy();
 
-		await fireEvent.click(accordionButton as HTMLButtonElement);
-		await waitFor(() => {
-			expect(screen.queryByRole('form', { name: 'Adicionar conta' })).toBeNull();
-		});
+		expect(screen.queryByRole('form', { name: 'Adicionar conta' })).toBeNull();
 
 		await fireEvent.click(accordionButton as HTMLButtonElement);
 		await waitFor(() => {
@@ -70,10 +69,18 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getByText(
+				screen.getAllByText(
 					'Adicione uma conta de origem e uma conta de categoria para liberar o lançamento guiado.'
 				)
-			).toBeTruthy();
+			).toHaveLength(2);
+		});
+
+		const accordionButton = screen.getByText('Painel de contas e configuração').closest('button');
+		expect(accordionButton).toBeTruthy();
+
+		await fireEvent.click(accordionButton as HTMLButtonElement);
+		await waitFor(() => {
+			expect(screen.getByRole('form', { name: 'Adicionar conta' })).toBeTruthy();
 		});
 
 		const accountForm = screen.getByRole('form', { name: 'Adicionar conta' });
