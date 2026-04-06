@@ -7,9 +7,7 @@ describe('buildAccountSetupSummary', () => {
 		const summary = buildAccountSetupSummary([{ name: 'Assets:Checking', type: 'Assets' }]);
 
 		expect(summary.canRecordTransactions).toBe(false);
-		expect(summary.headline).toBe(
-			'Crie pelo menos uma conta de categoria para liberar o lançamento guiado.'
-		);
+		expect(summary.headline).toBe('Adicione pelo menos uma conta de categoria para começar.');
 		expect(summary.fundingAccounts.map((account) => account.name)).toEqual(['Assets:Checking']);
 		expect(summary.categoryAccounts).toEqual([]);
 	});
@@ -21,9 +19,7 @@ describe('buildAccountSetupSummary', () => {
 		]);
 
 		expect(summary.canRecordTransactions).toBe(true);
-		expect(summary.headline).toBe(
-			'As contas de origem e categoria estão prontas para o lançamento guiado.'
-		);
+		expect(summary.headline).toBe('Tudo pronto para registrar transações.');
 		expect(summary.fundingAccounts.map((account) => account.name)).toEqual(['Assets:Checking']);
 		expect(summary.categoryAccounts.map((account) => account.name)).toEqual(['Expenses:Dining']);
 	});

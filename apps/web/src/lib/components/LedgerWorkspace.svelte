@@ -257,24 +257,6 @@
 <section
 	class="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl flex-col px-3 pt-5 pb-10 sm:px-4 md:px-6 md:pt-8"
 >
-	<header class="grid gap-3 px-1">
-		<p
-			class="[font-family:var(--font-mono)] text-[0.72rem] tracking-[0.18em] text-[color:var(--accent)] uppercase"
-		>
-			{ptBrCopy.workspace.brandKicker}
-		</p>
-		<div class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)] lg:items-end">
-			<h1
-				class="max-w-4xl [font-family:var(--font-display)] text-4xl leading-none font-semibold tracking-[-0.05em] text-[color:var(--ink)] sm:text-5xl lg:text-6xl"
-			>
-				{ptBrCopy.workspace.mastheadTitle}
-			</h1>
-			<p class="max-w-2xl text-sm leading-7 text-[color:var(--ink-soft)] sm:text-base">
-				{ptBrCopy.workspace.mastheadNote}
-			</p>
-		</div>
-	</header>
-
 	<div class="mt-6 grid gap-4 lg:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)_minmax(18rem,22rem)]">
 		<section class="order-1 lg:order-2">
 			<Card.Root

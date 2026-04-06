@@ -109,7 +109,7 @@ describe('createGuidedTransactionSchema', () => {
 		}
 
 		expect(buildGuidedTransactionFieldErrors(result.error).fundingAccount).toBe(
-			'Escolha uma conta de origem do painel de contas.'
+			'Escolha uma conta de origem no painel de contas.'
 		);
 	});
 

@@ -27,9 +27,7 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getAllByText(
-					'Crie pelo menos uma conta de categoria para liberar o lançamento guiado.'
-				)
+				screen.getAllByText('Adicione pelo menos uma conta de categoria para começar.')
 			).toHaveLength(2);
 		});
 
@@ -54,7 +52,7 @@ describe('LedgerWorkspace', () => {
 			)
 		).toBeTruthy();
 		expect(
-			(screen.getByRole('button', { name: 'Registrar transação' }) as HTMLButtonElement).disabled
+			(screen.getByRole('button', { name: 'Salvar transação' }) as HTMLButtonElement).disabled
 		).toBe(true);
 	});
 
@@ -69,9 +67,7 @@ describe('LedgerWorkspace', () => {
 
 		await waitFor(() => {
 			expect(
-				screen.getAllByText(
-					'Adicione uma conta de origem e uma conta de categoria para liberar o lançamento guiado.'
-				)
+				screen.getAllByText('Adicione uma conta de origem e uma de categoria para começar.')
 			).toHaveLength(2);
 		});
 
@@ -120,9 +116,7 @@ describe('LedgerWorkspace', () => {
 		render(LedgerWorkspace);
 
 		await waitFor(() => {
-			expect(
-				screen.getByText('As contas de origem e categoria estão prontas para o lançamento guiado.')
-			).toBeTruthy();
+			expect(screen.getByText('Tudo pronto para registrar transações.')).toBeTruthy();
 		});
 
 		const transactionForm = screen.getByRole('form', { name: 'Lançamento guiado de transação' });
@@ -155,9 +149,7 @@ describe('LedgerWorkspace', () => {
 		render(LedgerWorkspace);
 
 		await waitFor(() => {
-			expect(
-				screen.getByText('As contas de origem e categoria estão prontas para o lançamento guiado.')
-			).toBeTruthy();
+			expect(screen.getByText('Tudo pronto para registrar transações.')).toBeTruthy();
 		});
 
 		const transactionForm = screen.getByRole('form', { name: 'Lançamento guiado de transação' });
@@ -188,7 +180,7 @@ describe('LedgerWorkspace', () => {
 		await fireEvent.submit(transactionForm);
 
 		await waitFor(() => {
-			expect(screen.getByText('Transação registrada no razão local.')).toBeTruthy();
+			expect(screen.getByText('Transação salva.')).toBeTruthy();
 		});
 
 		expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:3000/transactions', {
@@ -261,7 +253,7 @@ describe('LedgerWorkspace', () => {
 		});
 
 		const recentPanelHeading = screen.getByRole('heading', {
-			name: 'As transações mais novas aparecem assim que entram.'
+			name: 'As transações mais recentes aparecem aqui.'
 		});
 		const recentPanel = recentPanelHeading.closest('section');
 

@@ -13,14 +13,11 @@ test('guided transaction entry works end to end in the browser', async ({ page }
 	await page.emulateMedia({ colorScheme: 'dark' });
 	await page.goto('/');
 
-	await expect(page.getByText(/Lance as transações que você realmente lembra\./)).toBeVisible();
-	await expect(page.getByText(/Escolha as contas que estruturam cada lançamento\./)).toBeVisible();
+	await expect(page.getByText(/Escolha as contas usadas em cada transação\./)).toBeVisible();
 	await expect(page.locator('html')).toHaveAttribute('data-theme-preference', 'system');
 	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 	await expect(
-		page.getByText(
-			'Registre uma transação e ela aparecerá aqui como a movimentação mais recente do seu razão.'
-		)
+		page.getByText('Quando você registrar a primeira, ela vai aparecer aqui.')
 	).toBeVisible();
 
 	const themeTrigger = page.getByRole('button', { name: 'Trocar tema de aparência' });
@@ -65,15 +62,15 @@ test('guided transaction entry works end to end in the browser', async ({ page }
 	await expect(transactionForm.getByLabel('Conta de origem')).toHaveValue('Assets:Checking');
 	await expect(transactionForm.getByLabel('Conta de categoria')).toHaveValue('Expenses:Groceries');
 
-	const submitTransactionButton = page.getByRole('button', { name: 'Registrar transação' });
+	const submitTransactionButton = page.getByRole('button', { name: 'Salvar transação' });
 	await expect(submitTransactionButton).toBeEnabled();
 	await submitTransactionButton.click();
 
-	await expect(page.getByText('Transação registrada no razão local.')).toBeVisible();
+	await expect(page.getByText('Transação salva.')).toBeVisible();
 
 	const recentPanel = page.locator('section').filter({
 		has: page.getByRole('heading', {
-			name: 'As transações mais novas aparecem assim que entram.'
+			name: 'As transações mais recentes aparecem aqui.'
 		})
 	});
 	const latestTransaction = recentPanel.locator('.transaction-list li').first();
@@ -108,9 +105,7 @@ test('mobile layout keeps the transaction flow in the first viewport and exposes
 	});
 
 	expect(viewportMetrics.scrollWidth).toBeLessThanOrEqual(viewportMetrics.clientWidth);
-	await expect(
-		page.getByText(/Registre uma conta de origem, uma conta de categoria e um valor claro\./)
-	).toBeVisible();
+	await expect(page.getByText(/Informe a conta de origem, a categoria e o valor\./)).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Abrir painel de contas' })).toBeVisible();
 
 	await page.getByRole('button', { name: 'Trocar tema de aparência' }).click();
@@ -131,7 +126,9 @@ test('mobile layout keeps the transaction flow in the first viewport and exposes
 	await accountForm.getByLabel('Nome da conta').fill('Expenses:Groceries');
 	await accountForm.getByLabel('Tipo de conta').selectOption('Expenses');
 	await accountForm.getByRole('button', { name: 'Adicionar conta' }).click();
-	await expect(page.getByLabel('Contas de categoria').getByText('Expenses:Groceries')).toBeVisible();
+	await expect(
+		page.getByLabel('Contas de categoria').getByText('Expenses:Groceries')
+	).toBeVisible();
 
 	const transactionForm = page.getByRole('form', { name: 'Lançamento guiado de transação' });
 	await transactionForm.getByLabel('Data').fill('2026-04-02');
@@ -142,11 +139,11 @@ test('mobile layout keeps the transaction flow in the first viewport and exposes
 	await expect(transactionForm.getByLabel('Conta de origem')).toHaveValue('Assets:Checking');
 	await expect(transactionForm.getByLabel('Conta de categoria')).toHaveValue('Expenses:Groceries');
 
-	const submitTransactionButton = page.getByRole('button', { name: 'Registrar transação' });
+	const submitTransactionButton = page.getByRole('button', { name: 'Salvar transação' });
 	await expect(submitTransactionButton).toBeEnabled();
 	await submitTransactionButton.click();
 
-	await expect(page.getByText('Transação registrada no razão local.')).toBeVisible();
+	await expect(page.getByText('Transação salva.')).toBeVisible();
 	await expect(
 		page.locator('.transaction-list li').first().getByText('Mercado', { exact: true })
 	).toBeVisible();

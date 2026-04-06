@@ -24,11 +24,11 @@ export const ptBrCopy = {
 	},
 	layout: {
 		homeAriaLabel: 'Página inicial do Numen',
-		localLedger: 'Razão local'
+		localLedger: 'Controle financeiro local'
 	},
 	page: {
 		description:
-			'Espaço de lançamento estruturado para o razão local-first em partidas dobradas do Numen.'
+			'Espaço de lançamentos estruturados em partidas dobradas no Numen, com tudo salvo localmente.'
 	},
 	appearance: {
 		sectionLabel: 'Controles de aparência',
@@ -37,13 +37,14 @@ export const ptBrCopy = {
 		menuLabel: 'Menu de aparência',
 		radioGroupLabel: 'Tema de cores',
 		themeDescriptions: {
-			light: 'Mantém o razão claro, com tom de papel.',
-			dark: 'Leva a mesa para um ambiente de leitura com pouca luz.',
-			system: 'Segue automaticamente a preferência do dispositivo.'
+			light: 'Visual claro, com cara de papel.',
+			dark: 'Visual escuro, mais confortável à noite.',
+			system: 'Acompanha o tema do seu dispositivo.'
 		},
 		themeLabels,
-		statusSystemActive: (theme: 'light' | 'dark') => `Sistema ativo - ${themeLabels[theme]} agora`,
-		statusPinned: (theme: keyof typeof themeLabels) => `${themeLabels[theme]} fixo`
+		statusSystemActive: (theme: 'light' | 'dark') =>
+			`Acompanhando o sistema: ${themeLabels[theme]}`,
+		statusPinned: (theme: keyof typeof themeLabels) => `Tema selecionado: ${themeLabels[theme]}`
 	},
 	accountSetup: {
 		groups: {
@@ -54,49 +55,39 @@ export const ptBrCopy = {
 		},
 		states: {
 			missingBoth: {
-				headline:
-					'Adicione uma conta de origem e uma conta de categoria para liberar o lançamento guiado.',
-				detail:
-					'O fluxo guiado precisa de uma conta para sair o dinheiro e outra para classificá-lo.'
+				headline: 'Adicione uma conta de origem e uma de categoria para começar.',
+				detail: 'Você precisa dessas duas contas para montar a transação.'
 			},
 			missingFunding: {
-				headline: 'Crie pelo menos uma conta de origem para liberar o lançamento guiado.',
-				detail:
-					'Contas de origem são Ativos ou Passivos de onde você gasta ou onde recebe dinheiro.'
+				headline: 'Adicione pelo menos uma conta de origem para começar.',
+				detail: 'É por essa conta que o dinheiro entra ou sai.'
 			},
 			missingCategory: {
-				headline: 'Crie pelo menos uma conta de categoria para liberar o lançamento guiado.',
-				detail:
-					'Contas de categoria são as suas Despesas e Receitas que classificam cada transação.'
+				headline: 'Adicione pelo menos uma conta de categoria para começar.',
+				detail: 'Ela classifica a transação, como Despesas ou Receitas.'
 			},
 			ready: {
-				headline: 'As contas de origem e categoria estão prontas para o lançamento guiado.',
-				detail:
-					'Agora você já pode escolher uma conta de origem e uma conta de categoria em cada nova transação.'
+				headline: 'Tudo pronto para registrar transações.',
+				detail: 'Agora é só escolher a conta de origem, a categoria e o valor.'
 			}
 		}
 	},
 	workspace: {
-		brandKicker: 'Razão Numen',
-		mastheadTitle: 'Lance as transações que você realmente lembra.',
-		mastheadNote:
-			'Uma mesa local-first e acolhedora para configurar contas, registrar transações guiadas e acompanhar as últimas movimentações do razão.',
 		accountDeskKicker: 'Painel de contas',
-		accountDeskHeading: 'Escolha as contas que estruturam cada lançamento.',
+		accountDeskHeading: 'Escolha as contas usadas em cada transação.',
 		accountDeskAccordionTrigger: 'Painel de contas e configuração',
 		accountDeskAccordionDescription:
-			'Abra este painel para adicionar contas de origem e categoria antes de registrar uma transação.',
-		loadingAccounts: 'Carregando as contas do seu razão...',
+			'Abra este painel para adicionar contas antes de registrar uma transação.',
+		loadingAccounts: 'Carregando suas contas...',
 		addAccountFormLabel: 'Adicionar conta',
 		accountNameLabel: 'Nome da conta',
 		accountNamePlaceholder: 'Despesas:Mercado',
 		accountTypeLabel: 'Tipo de conta',
-		accountFormHintReady: 'Adicione mais contas aqui conforme a sua estrutura evolui.',
+		accountFormHintReady: 'Se precisar, adicione mais contas por aqui.',
 		addingAccount: 'Adicionando...',
 		addAccount: 'Adicionar conta',
 		structuredEntryKicker: 'Lançamento guiado',
-		structuredEntryHeading:
-			'Registre uma conta de origem, uma conta de categoria e um valor claro.',
+		structuredEntryHeading: 'Informe a conta de origem, a categoria e o valor.',
 		transactionFormLabel: 'Lançamento guiado de transação',
 		dateLabel: 'Data',
 		amountLabel: 'Valor',
@@ -111,33 +102,30 @@ export const ptBrCopy = {
 		categoryAccountPlaceholder: 'Selecione uma conta de categoria',
 		tagsLabel: 'Tags',
 		tagsPlaceholder: 'alimentação, semanal, casa',
-		postingPreviewLabel: 'Prévia dos lançamentos',
-		ledgerEffectLabel: 'Impacto no razão',
-		postingPreviewHint: 'Escolha as contas para visualizar as duas partidas.',
-		postingPreviewEmpty:
-			'Informe o valor, a conta de origem e a conta de categoria para ver o par balanceado.',
-		tagPreviewLabel: 'Prévia das tags',
-		tagPreviewEmpty: 'Nenhuma tag ainda',
-		transactionReviewError: 'Revise os campos destacados e tente novamente.',
-		transactionSuccess: 'Transação registrada no razão local.',
+		postingPreviewLabel: 'Como vai ficar',
+		ledgerEffectLabel: 'Lançamentos',
+		postingPreviewHint: 'Escolha as contas para ver as duas partidas.',
+		postingPreviewEmpty: 'Preencha valor, origem e categoria para ver como a transação vai ficar.',
+		tagPreviewLabel: 'Tags',
+		tagPreviewEmpty: 'Sem tags',
+		transactionReviewError: 'Confira os campos destacados e tente de novo.',
+		transactionSuccess: 'Transação salva.',
 		transactionSetupAction: 'Abrir painel de contas',
-		transactionFooterReady:
-			'Um valor entra. Duas partidas balanceadas saem. O formulário deriva a estrutura do razão para você.',
+		transactionFooterReady: 'Você informa o valor e o app monta as duas partidas para você.',
 		transactionFooterLocked:
-			'Adicione uma conta de origem e uma conta de categoria antes de liberar o lançamento de transações.',
-		recordingTransaction: 'Registrando...',
-		recordTransaction: 'Registrar transação',
-		recentLedgerKicker: 'Razão recente',
-		recentLedgerHeading: 'As transações mais novas aparecem assim que entram.',
-		loadingTransactions: 'Carregando transações recentes...',
-		recentEmptyTitle: 'Nenhuma transação ainda',
-		recentEmpty:
-			'Registre uma transação e ela aparecerá aqui como a movimentação mais recente do seu razão.',
-		unableToLoadAccounts: 'Não foi possível carregar as contas agora.',
-		unableToLoadTransactions: 'Não foi possível carregar as transações recentes agora.',
+			'Adicione uma conta de origem e uma de categoria antes de registrar a transação.',
+		recordingTransaction: 'Salvando...',
+		recordTransaction: 'Salvar transação',
+		recentLedgerKicker: 'Últimas transações',
+		recentLedgerHeading: 'As transações mais recentes aparecem aqui.',
+		loadingTransactions: 'Carregando suas transações...',
+		recentEmptyTitle: 'Ainda não há transações',
+		recentEmpty: 'Quando você registrar a primeira, ela vai aparecer aqui.',
+		unableToLoadAccounts: 'Não conseguimos carregar suas contas agora.',
+		unableToLoadTransactions: 'Não conseguimos carregar suas transações agora.',
 		accountNameRequired: 'O nome da conta é obrigatório.',
-		unableToCreateAccount: 'Não foi possível criar a conta agora.',
-		unableToCreateTransaction: 'Não foi possível registrar a transação agora.'
+		unableToCreateAccount: 'Não conseguimos criar a conta agora.',
+		unableToCreateTransaction: 'Não conseguimos salvar a transação agora.'
 	},
 	recentTransactions: {
 		uncategorized: 'Sem categoria',
@@ -151,8 +139,8 @@ export const ptBrCopy = {
 		amountRequired: 'O valor é obrigatório.',
 		amountInvalid: 'Informe um valor positivo com até duas casas decimais.',
 		amountPositive: 'O valor precisa ser maior que zero.',
-		fundingAccountDesk: 'Escolha uma conta de origem do painel de contas.',
-		categoryAccountDesk: 'Escolha uma conta de categoria do painel de contas.'
+		fundingAccountDesk: 'Escolha uma conta de origem no painel de contas.',
+		categoryAccountDesk: 'Escolha uma conta de categoria no painel de contas.'
 	}
 } as const;
 

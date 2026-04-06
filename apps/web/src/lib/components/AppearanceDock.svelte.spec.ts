@@ -110,7 +110,7 @@ describe('AppearanceDock', () => {
 			'data-state',
 			'checked'
 		);
-		expect(screen.getByText('Claro fixo')).toBeTruthy();
+		expect(screen.getByText('Tema selecionado: Claro')).toBeTruthy();
 	});
 
 	it('tracks system theme changes while system mode is selected', async () => {
@@ -134,7 +134,7 @@ describe('AppearanceDock', () => {
 			'data-state',
 			'checked'
 		);
-		expect(screen.getByText('Sistema ativo - Escuro agora')).toBeTruthy();
+		expect(screen.getByText('Acompanhando o sistema: Escuro')).toBeTruthy();
 	});
 
 	it('exposes an accessible theme dropdown and persists explicit selections', async () => {
