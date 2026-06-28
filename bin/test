@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+gofmt_bin="$(go env GOROOT)/bin/gofmt"
+unformatted="$("${gofmt_bin}" -l .)"
+
+if [[ -n "${unformatted}" ]]; then
+  echo "gofmt needs to be run on:"
+  echo "${unformatted}"
+  exit 1
+fi
+
+go test ./...
+go vet ./...
+go build ./...
