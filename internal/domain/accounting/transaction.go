@@ -2,6 +2,7 @@ package accounting
 
 import "fmt"
 
+// Transaction is a validated balancing envelope around ordered postings.
 type Transaction struct {
 	id         TransactionID
 	date       Date
@@ -12,10 +13,6 @@ type Transaction struct {
 }
 
 // NewTransaction creates a balanced transaction envelope around signed postings.
-//
-// Example:
-//
-//	transaction, err := accounting.NewTransaction("txn-1", date, "Groceries", "Market", "groceries", postings)
 func NewTransaction(
 	id TransactionID,
 	date Date,
@@ -68,30 +65,37 @@ func clonePostings(postings []Posting) []Posting {
 	return clonedPostings
 }
 
+// ID returns the stable identifier shared by the transaction's postings.
 func (transaction Transaction) ID() TransactionID {
 	return transaction.id
 }
 
+// Date returns the calendar day when the transaction occurred.
 func (transaction Transaction) Date() Date {
 	return transaction.date
 }
 
+// Title returns the validated transaction title.
 func (transaction Transaction) Title() string {
 	return transaction.title
 }
 
+// Payee returns the free-text counterparty description.
 func (transaction Transaction) Payee() string {
 	return transaction.payee
 }
 
+// CategoryID returns the reporting category attached to the transaction.
 func (transaction Transaction) CategoryID() CategoryID {
 	return transaction.categoryID
 }
 
+// Postings returns a copy so callers cannot mutate transaction state indirectly.
 func (transaction Transaction) Postings() []Posting {
 	return clonePostings(transaction.postings)
 }
 
+// SetTitle validates and replaces the transaction title.
 func (transaction *Transaction) SetTitle(title string) error {
 	trimmedTitle, err := validateRequiredTitle(title)
 	if err != nil {
@@ -102,10 +106,12 @@ func (transaction *Transaction) SetTitle(title string) error {
 	return nil
 }
 
+// SetPayee replaces the free-text counterparty description.
 func (transaction *Transaction) SetPayee(payee string) {
 	transaction.payee = payee
 }
 
+// SetCategoryID attaches the transaction to a validated category identifier.
 func (transaction *Transaction) SetCategoryID(categoryID CategoryID) error {
 	if categoryID == "" {
 		return fmt.Errorf("invalid category ID %q: expected non-empty string", categoryID)
@@ -115,6 +121,7 @@ func (transaction *Transaction) SetCategoryID(categoryID CategoryID) error {
 	return nil
 }
 
+// ReplacePostings replaces the posting set only when its signed amounts balance.
 func (transaction *Transaction) ReplacePostings(postings []Posting) error {
 	if err := validateBalancedPostings(postings); err != nil {
 		return err

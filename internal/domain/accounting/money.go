@@ -8,11 +8,7 @@ import (
 
 const brlInputShape = "123.45 or -123.45"
 
-// ParseBRLCentavos parses plain decimal user input into signed centavos.
-//
-// Example:
-//
-//	centavos, err := accounting.ParseBRLCentavos("123.45")
+// ParseBRLCentavos parses strict dot-decimal input such as "123.45" or "-123.45" into signed centavos.
 func ParseBRLCentavos(input string) (int64, error) {
 	trimmedInput := strings.TrimSpace(input)
 	if trimmedInput == "" {
@@ -81,10 +77,6 @@ func invalidBRLInput(input string) error {
 }
 
 // FormatBRL formats signed centavos as BRL display text.
-//
-// Example:
-//
-//	formatted := accounting.FormatBRL(-12345)
 func FormatBRL(amount int64) string {
 	signPrefix, unsignedAmount := brlSignPrefix(amount)
 	reais := unsignedAmount / 100

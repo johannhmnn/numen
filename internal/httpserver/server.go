@@ -2,11 +2,7 @@ package httpserver
 
 import "net/http"
 
-// New returns the bootstrap HTTP handler for local development.
-//
-// Example:
-//
-//	handler := httpserver.New()
+// New returns the application HTTP handler with its routes registered.
 func New() http.Handler {
 	mux := http.NewServeMux()
 	registerHealthRoute(mux)
