@@ -15,6 +15,14 @@
 - Docstrings on public functions: intent + one usage example.
 - Reference issue numbers / commit SHAs when a line exists because
   of a specific bug or upstream constraint.
+## Go diagnostics
+- Before changing a symbol definition, run
+  `gopls references file.go:line:column` and inspect the affected callers.
+- After every Go source edit, run `gopls check -severity=hint <file>` for
+  each changed `.go` file.
+- Resolve errors, warnings, and hints, then rerun `gopls check` until clean.
+  Informational diagnostics may be ignored only when demonstrably unrelated.
+- Run `./bin/test` only after the edited Go files have no relevant diagnostics.
 ## Tests
 - Tests run with a single command: `./bin/test`.
 - Every new function gets a test. Bug fixes get a regression test.
