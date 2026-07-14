@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
+	"slices"
 	"strings"
 
 	_ "modernc.org/sqlite"
@@ -56,13 +57,7 @@ func dsnHasEnabledForeignKeysPragma(dsn string) bool {
 		return false
 	}
 
-	for _, pragma := range values["_pragma"] {
-		if pragmaEnablesForeignKeys(pragma) {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(values["_pragma"], pragmaEnablesForeignKeys)
 }
 
 func pragmaEnablesForeignKeys(pragma string) bool {
