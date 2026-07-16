@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
-	"slices"
 	"strings"
 
 	_ "modernc.org/sqlite"
@@ -31,46 +30,52 @@ func Open(dsn string) (*sql.DB, error) {
 }
 
 func sqliteDSNWithForeignKeys(dsn string) string {
-	if dsnHasEnabledForeignKeysPragma(dsn) {
-		return dsn
+	databasePath, query, found := strings.Cut(dsn, "?")
+	if !found {
+		return dsn + "?" + foreignKeysPragmaQuery
 	}
 
-	separator := "?"
-	if strings.Contains(dsn, "?") {
-		separator = "&"
-	}
-	if strings.HasSuffix(dsn, "?") || strings.HasSuffix(dsn, "&") {
-		separator = ""
-	}
-
-	return dsn + separator + foreignKeysPragmaQuery
+	parameters := queryParametersWithoutForeignKeys(query)
+	parameters = append(parameters, foreignKeysPragmaQuery)
+	return databasePath + "?" + strings.Join(parameters, "&")
 }
 
-func dsnHasEnabledForeignKeysPragma(dsn string) bool {
-	_, query, found := strings.Cut(dsn, "?")
+func queryParametersWithoutForeignKeys(query string) []string {
+	parameters := make([]string, 0)
+	for parameter := range strings.SplitSeq(query, "&") {
+		if parameter == "" || isForeignKeysPragmaParameter(parameter) {
+			continue
+		}
+		parameters = append(parameters, parameter)
+	}
+
+	return parameters
+}
+
+func isForeignKeysPragmaParameter(parameter string) bool {
+	encodedName, encodedValue, found := strings.Cut(parameter, "=")
 	if !found {
 		return false
 	}
 
-	values, err := url.ParseQuery(query)
-	if err != nil {
+	name, nameErr := url.QueryUnescape(encodedName)
+	pragma, pragmaErr := url.QueryUnescape(encodedValue)
+	if nameErr != nil || pragmaErr != nil || !strings.EqualFold(name, "_pragma") {
 		return false
 	}
 
-	return slices.ContainsFunc(values["_pragma"], pragmaEnablesForeignKeys)
+	return strings.EqualFold(sqlitePragmaName(pragma), "foreign_keys")
 }
 
-func pragmaEnablesForeignKeys(pragma string) bool {
+func sqlitePragmaName(pragma string) string {
 	normalizedPragma := strings.TrimSpace(pragma)
-	name, value, found := strings.Cut(normalizedPragma, "=")
+	name, _, found := strings.Cut(normalizedPragma, "=")
 	if !found {
-		name, value, found = strings.Cut(normalizedPragma, "(")
+		name, _, found = strings.Cut(normalizedPragma, "(")
 	}
-	if !found || !strings.EqualFold(strings.TrimSpace(name), "foreign_keys") {
-		return false
+	if !found {
+		return normalizedPragma
 	}
 
-	normalizedValue := strings.Trim(strings.ToLower(strings.TrimSpace(value)), " )")
-	return normalizedValue == "1" || normalizedValue == "on" ||
-		normalizedValue == "true" || normalizedValue == "yes"
+	return strings.TrimSpace(name)
 }
