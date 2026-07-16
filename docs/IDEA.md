@@ -33,7 +33,9 @@ types are:
 
 `Asset` is required for accounts like checking accounts and cash.
 
-Account names cannot be empty.
+Account names cannot be empty and must be unique among accounts by exact
+trimmed name. Preserve capitalization, accents, spacing, and punctuation in
+the stored display name.
 
 ### Transactions and postings
 
@@ -69,6 +71,9 @@ balances directly in v1.
 ### Categories
 
 Keep `Category` separate from `Account`.
+
+Category names follow the same exact trimmed-name uniqueness rule among
+categories. An account and a category may share the same name.
 
 Attach one category to each transaction in v1. Split-category transactions are
 deferred until there is a real need.

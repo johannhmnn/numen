@@ -79,8 +79,9 @@ This plan assumes the target is the first manual ledger slice described in
   domain invariants, or leaving delete-precondition checks impossible to
   enforce later.
 - Required tests: schema initialization, account/category persistence
-  round-trips, two-posting transaction storage, derived-reference checks for
-  referenced account/category deletion, and isolated temporary-database tests.
+  round-trips, exact trimmed-name uniqueness, two-posting transaction storage,
+  derived-reference checks for referenced account/category deletion, and
+  isolated temporary-database tests.
 - Timebox: up to 2 hours.
 
 ## Task 6: Server-Side Account CRUD Contract
@@ -94,7 +95,8 @@ This plan assumes the target is the first manual ledger slice described in
   as bank-only entities, or using placeholder delete behavior instead of real
   persisted-reference checks.
 - Required tests: create/edit/list/remove flows through the service and HTTP
-  contract, name/type validation, and deletion behavior for referenced accounts.
+  contract, exact name uniqueness, type validation, preserved display spelling, and
+  deletion behavior for referenced accounts.
 - Timebox: up to 2 hours.
 
 ## Task 7: Server-Side Category CRUD Contract
@@ -108,14 +110,16 @@ This plan assumes the target is the first manual ledger slice described in
   categories with expense accounts, or allowing invalid removal when a category
   is already in use.
 - Required tests: create/edit/list/remove flows through the service and HTTP
-  contract, name validation, and in-use deletion behavior.
+  contract, exact name uniqueness, preserved display spelling, and in-use
+  deletion behavior.
 - Timebox: 1 to 2 hours.
 
 ## Task 8: Server-Side Transaction Entry Contract
 
 - Objective: collect date, title, payee, category, amount, source account, and
-  destination account through server-side contracts, then generate the two
-  signed postings automatically.
+  destination account through server-side contracts, resolve the selected
+  existing account identifiers, then generate the two signed postings
+  automatically without implicitly creating accounts.
 - Affected files: transaction application service, transaction repository
   contract, HTTP routes/handlers, request parsing, and integration tests.
 - Risks: inverted signs, invalid source/destination handling, frontend-specific
@@ -166,3 +170,13 @@ This plan assumes the target is the first manual ledger slice described in
   of the end-to-end slice, the single test command, and the default formatter
   for the chosen stack.
 - Timebox: 1 to 2 hours.
+
+## Future MoSCoW Backlog
+
+### Could
+
+- Suggest existing accounts or categories when user input has similar case,
+  accents, spacing, punctuation, or spelling. Keep these suggestions advisory
+  and allow the user to dismiss them.
+- Merge one account into another by moving its postings to the destination
+  account without treating the operation as a rename.
