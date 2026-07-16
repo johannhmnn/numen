@@ -56,20 +56,7 @@ This plan assumes the target is the first manual ledger slice described in
   expected shape.
 - Timebox: 1 to 2 hours.
 
-## Task 4: Local Persistence and Initial Schema
-
-- Objective: add SQLite schema and repository implementations for accounts,
-  categories, transactions, and postings without leaking core invariants into
-  ad hoc SQL.
-- Affected files: persistence layer, schema/migrations, repository interfaces,
-  and database integration tests.
-- Risks: storing derived balances directly, scattering business rules across
-  SQL, and making schema evolution harder than necessary.
-- Required tests: persistence round-trip, two-posting transaction storage,
-  derived balances from postings, and isolated temporary-database tests.
-- Timebox: up to 2 hours.
-
-## Task 5: Persistence Schema and Repository Layer
+## Task 4: Persistence Schema and Repository Layer
 
 - Objective: define the full server-side storage structure for accounts,
   categories, transactions, and postings before building user-facing screens.
@@ -84,7 +71,7 @@ This plan assumes the target is the first manual ledger slice described in
   isolated temporary-database tests.
 - Timebox: up to 2 hours.
 
-## Task 6: Server-Side Account CRUD Contract
+## Task 5: Server-Side Account CRUD Contract
 
 - Objective: support creating, listing, editing, and removing accounts through
   application services and HTTP route contracts, with clear accounting
@@ -95,11 +82,11 @@ This plan assumes the target is the first manual ledger slice described in
   as bank-only entities, or using placeholder delete behavior instead of real
   persisted-reference checks.
 - Required tests: create/edit/list/remove flows through the service and HTTP
-  contract, exact name uniqueness, type validation, preserved display spelling, and
-  deletion behavior for referenced accounts.
+  contract, exact name uniqueness, type validation, preserved display spelling,
+  and deletion behavior for referenced accounts.
 - Timebox: up to 2 hours.
 
-## Task 7: Server-Side Category CRUD Contract
+## Task 6: Server-Side Category CRUD Contract
 
 - Objective: support creating, listing, editing, and removing categories through
   application services and HTTP route contracts while keeping categories
@@ -114,7 +101,7 @@ This plan assumes the target is the first manual ledger slice described in
   deletion behavior.
 - Timebox: 1 to 2 hours.
 
-## Task 8: Server-Side Transaction Entry Contract
+## Task 7: Server-Side Transaction Entry Contract
 
 - Objective: collect date, title, payee, category, amount, source account, and
   destination account through server-side contracts, resolve the selected
@@ -128,7 +115,7 @@ This plan assumes the target is the first manual ledger slice described in
   invalid input rejection, and full transaction persistence.
 - Timebox: up to 2 hours.
 
-## Task 9: First Frontend Surface for CRUD
+## Task 8: First Frontend Surface for CRUD
 
 - Objective: introduce the first server-rendered HTML frontend after the
   persistence, service, and HTTP contracts are stable.
@@ -141,7 +128,7 @@ This plan assumes the target is the first manual ledger slice described in
   pages.
 - Timebox: up to 2 hours.
 
-## Task 10: Ledger Views, Derived Balances, and Monthly Summary
+## Task 9: Ledger Views, Derived Balances, and Monthly Summary
 
 - Objective: show transactions with basic filtering/sorting, compute account
   balances from postings, and generate the monthly expense summary by category
@@ -157,7 +144,7 @@ This plan assumes the target is the first manual ledger slice described in
   explicitly included.
 - Timebox: up to 2 hours.
 
-## Task 11: UX Polish and Hardening
+## Task 10: UX Polish and Hardening
 
 - Objective: finish the slice with predictable row selection/editing, useful
   validation feedback, small refactors, and short supporting documentation.
