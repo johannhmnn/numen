@@ -34,10 +34,6 @@ func NewTransaction(
 		return Transaction{}, fmt.Errorf("invalid category ID %q: expected non-empty string", categoryID)
 	}
 
-	if len(postings) < 2 {
-		return Transaction{}, fmt.Errorf("invalid postings count %d: expected at least 2 postings", len(postings))
-	}
-
 	if err := validateBalancedPostings(postings); err != nil {
 		return Transaction{}, err
 	}
@@ -46,6 +42,10 @@ func NewTransaction(
 }
 
 func validateBalancedPostings(postings []Posting) error {
+	if len(postings) < 2 {
+		return fmt.Errorf("invalid postings count %d: expected at least 2 postings", len(postings))
+	}
+
 	var total int64
 
 	for _, posting := range postings {
@@ -121,7 +121,7 @@ func (transaction *Transaction) SetCategoryID(categoryID CategoryID) error {
 	return nil
 }
 
-// ReplacePostings replaces the posting set only when its signed amounts balance.
+// ReplacePostings replaces the posting set only when at least two signed amounts balance.
 func (transaction *Transaction) ReplacePostings(postings []Posting) error {
 	if err := validateBalancedPostings(postings); err != nil {
 		return err

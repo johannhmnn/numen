@@ -116,6 +116,18 @@ func TestTransactionReplacePostingsAcceptsBalancedSet(t *testing.T) {
 	}
 }
 
+func TestTransactionReplacePostingsRejectsNil(t *testing.T) {
+	transaction := mustTransaction(t)
+
+	err := transaction.ReplacePostings(nil)
+	if err == nil {
+		t.Fatal("expected nil postings error")
+	}
+	if len(transaction.Postings()) != 2 {
+		t.Fatal("expected original postings to remain after rejected replacement")
+	}
+}
+
 func TestTransactionReplacePostingsRejectsUnbalancedSet(t *testing.T) {
 	transaction := mustTransaction(t)
 	postings := []accounting.Posting{
@@ -131,13 +143,13 @@ func TestTransactionReplacePostingsRejectsUnbalancedSet(t *testing.T) {
 
 func TestTransactionReplacePostingsRejectsFewerThanTwoPostings(t *testing.T) {
 	transaction := mustTransaction(t)
-	postings := []accounting.Posting{
-		mustPosting(t, "cash", -5000),
-	}
 
-	err := transaction.ReplacePostings(postings)
+	err := transaction.ReplacePostings([]accounting.Posting{{}})
 	if err == nil {
 		t.Fatal("expected postings count error")
+	}
+	if len(transaction.Postings()) != 2 {
+		t.Fatal("expected original postings to remain after rejected replacement")
 	}
 }
 
