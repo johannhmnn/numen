@@ -36,6 +36,17 @@ func TestNewAccountExposesAccessorValues(t *testing.T) {
 	}
 }
 
+func TestNewAccountTrimsNameAndPreservesSpelling(t *testing.T) {
+	account, err := accounting.NewAccount("credit-card", "  Cartão:  Crédito  ", accounting.AccountTypeLiability)
+	if err != nil {
+		t.Fatalf("new account: %v", err)
+	}
+
+	if account.Name() != "Cartão:  Crédito" {
+		t.Fatalf("account name %q: expected preserved trimmed spelling", account.Name())
+	}
+}
+
 func TestNewAccountRejectsInvalidAccountType(t *testing.T) {
 	_, err := accounting.NewAccount("account-1", "Checking", accounting.AccountType("Bank"))
 	if err == nil {

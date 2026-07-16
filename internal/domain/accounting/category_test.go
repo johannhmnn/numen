@@ -17,6 +17,17 @@ func TestNewCategoryExposesAccessorValues(t *testing.T) {
 	}
 }
 
+func TestNewCategoryTrimsNameAndPreservesSpelling(t *testing.T) {
+	category, err := accounting.NewCategory("health", "  Saúde  ")
+	if err != nil {
+		t.Fatalf("new category: %v", err)
+	}
+
+	if category.Name() != "Saúde" {
+		t.Fatalf("category name %q: expected preserved trimmed spelling", category.Name())
+	}
+}
+
 func TestNewCategoryRejectsEmptyName(t *testing.T) {
 	_, err := accounting.NewCategory("category-1", "")
 	if err == nil {
